@@ -1,4 +1,10 @@
 import axios from "axios";
+import {
+  getAccessToken,
+  getRefreshToken,
+  setAccessToken,
+  clearAuthStorage,
+} from "@/features/auth/lib/auth-storage";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -17,12 +23,10 @@ export const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("access_token");
+    const token = getAccessToken();
 
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
 
     return config;
@@ -77,7 +81,7 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = localStorage.getItem("refresh_token");
+        const refreshToken = getRefreshToken();
 
         const res = await axios.post(`${API_BASE_URL}/auth/refresh`, {
           refreshToken,
@@ -85,7 +89,7 @@ api.interceptors.response.use(
 
         const newAccessToken = res.data.accessToken;
 
-        localStorage.setItem("access_token", newAccessToken);
+        setAccessToken(newAccessToken);
 
         processQueue(null, newAccessToken);
 
@@ -95,10 +99,9 @@ api.interceptors.response.use(
       } catch (err) {
         processQueue(err, null);
 
-        localStorage.removeItem("access_token");
-        localStorage.removeItem("refresh_token");
+        clearAuthStorage();
 
-        window.location.href = "/login";
+        window.location.href = "/";
 
         return Promise.reject(err);
       } finally {

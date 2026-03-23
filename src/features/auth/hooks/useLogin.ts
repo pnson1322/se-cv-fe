@@ -4,6 +4,13 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { loginWithEmail } from "../api/auth.api";
 import { useAuth } from "./useAuth";
+import { toast } from "sonner";
+import { AxiosError } from "axios";
+
+type ApiErrorResponse = {
+  success?: boolean;
+  message?: string;
+};
 
 export function useLogin() {
   const router = useRouter();
@@ -13,17 +20,27 @@ export function useLogin() {
     mutationFn: (payload: { email: string; password: string }) =>
       loginWithEmail(payload),
 
-    onSuccess: (data) => {
+    onSuccess: (response) => {
+      const accessToken = response.data.access_token;
+      const user = response.data.user;
+
       auth.login({
-        user: data.user,
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
+        accessToken,
+        user,
       });
+
+      toast.success(response.message || "Đăng nhập thành công");
 
       router.push("/dashboard");
     },
 
-    onError: (error) => {
+    onError: (error: AxiosError<ApiErrorResponse>) => {
+      const message =
+        error?.response?.data?.message ||
+        "Đăng nhập thất bại, vui lòng thử lại";
+
+      toast.error(message);
+
       console.error("Login failed:", error);
     },
   });

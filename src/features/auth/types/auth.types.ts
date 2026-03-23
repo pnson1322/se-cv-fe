@@ -18,9 +18,19 @@ export type AuthUser = {
 };
 
 export type LoginResponse = {
-  accessToken: string;
-  refreshToken?: string;
-  user: AuthUser;
+  success: boolean;
+  message: string;
+  data: {
+    access_token: string;
+    user: AuthUser;
+  };
+};
+
+export type RefreshTokenResponse = {
+  success: boolean;
+  data: {
+    access_token: string;
+  };
 };
 
 export type AuthContextValue = {
@@ -28,6 +38,7 @@ export type AuthContextValue = {
   accessToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (payload: LoginResponse) => void;
+  login: (payload: { accessToken: string; user: AuthUser }) => void;
   logout: () => void;
+  setUser: (user: AuthUser | null) => void;
 };

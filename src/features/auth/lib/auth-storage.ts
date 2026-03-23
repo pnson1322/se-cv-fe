@@ -1,39 +1,31 @@
 import type { AuthUser } from "../types/auth.types";
 
 const ACCESS_TOKEN_KEY = "access_token";
-const REFRESH_TOKEN_KEY = "refresh_token";
 const USER_KEY = "auth_user";
 
-export function setAccessToken(token: string) {
-  localStorage.setItem(ACCESS_TOKEN_KEY, token);
+function getStorage(): Storage | null {
+  if (typeof window === "undefined") return null;
+  return window.localStorage;
 }
 
-export function getAccessToken() {
-  return localStorage.getItem(ACCESS_TOKEN_KEY);
+export function setAccessToken(token: string): void {
+  getStorage()?.setItem(ACCESS_TOKEN_KEY, token);
 }
 
-export function removeAccessToken() {
-  localStorage.removeItem(ACCESS_TOKEN_KEY);
+export function getAccessToken(): string | null {
+  return getStorage()?.getItem(ACCESS_TOKEN_KEY) ?? null;
 }
 
-export function setRefreshToken(token: string) {
-  localStorage.setItem(REFRESH_TOKEN_KEY, token);
+export function removeAccessToken(): void {
+  getStorage()?.removeItem(ACCESS_TOKEN_KEY);
 }
 
-export function getRefreshToken() {
-  return localStorage.getItem(REFRESH_TOKEN_KEY);
-}
-
-export function removeRefreshToken() {
-  localStorage.removeItem(REFRESH_TOKEN_KEY);
-}
-
-export function setAuthUser(user: AuthUser) {
-  localStorage.setItem(USER_KEY, JSON.stringify(user));
+export function setAuthUser(user: AuthUser): void {
+  getStorage()?.setItem(USER_KEY, JSON.stringify(user));
 }
 
 export function getAuthUser(): AuthUser | null {
-  const raw = localStorage.getItem(USER_KEY);
+  const raw = getStorage()?.getItem(USER_KEY);
 
   if (!raw) return null;
 
@@ -44,12 +36,11 @@ export function getAuthUser(): AuthUser | null {
   }
 }
 
-export function removeAuthUser() {
-  localStorage.removeItem(USER_KEY);
+export function removeAuthUser(): void {
+  getStorage()?.removeItem(USER_KEY);
 }
 
-export function clearAuthStorage() {
+export function clearAuthStorage(): void {
   removeAccessToken();
-  removeRefreshToken();
   removeAuthUser();
 }

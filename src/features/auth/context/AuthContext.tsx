@@ -9,7 +9,6 @@ import {
   getAuthUser,
   setAccessToken,
   setAuthUser,
-  setRefreshToken,
 } from "../lib/auth-storage";
 
 export const AuthContext = createContext<AuthContextValue | undefined>(
@@ -27,17 +26,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   );
   const [isLoading, setIsLoading] = useState(false);
 
-  const login: AuthContextValue["login"] = ({
-    user,
-    accessToken,
-    refreshToken,
-  }) => {
+  const login: AuthContextValue["login"] = ({ user, accessToken }) => {
     setAuthUser(user);
     setAccessToken(accessToken);
-
-    if (refreshToken) {
-      setRefreshToken(refreshToken);
-    }
 
     setUser(user);
     setAccessTokenState(accessToken);
@@ -57,6 +48,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       isLoading,
       login,
       logout,
+      setUser,
     }),
     [user, accessToken, isLoading],
   );

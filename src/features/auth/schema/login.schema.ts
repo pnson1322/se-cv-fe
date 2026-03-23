@@ -3,12 +3,14 @@ import { z } from "zod";
 export const loginSchema = z.object({
   email: z
     .string()
-    .min(1, "Email không được để trống")
-    .email("Email không hợp lệ"),
+    .trim()
+    .min(1, "Vui lòng nhập email")
+    .email("Email không đúng định dạng"),
   password: z
     .string()
-    .min(1, "Mật khẩu không được để trống")
-    .min(6, "Mật khẩu tối thiểu 6 ký tự"),
+    .min(1, "Vui lòng nhập mật khẩu")
+    .min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
+  rememberMe: z.boolean(),
 });
 
 export type LoginSchemaType = z.infer<typeof loginSchema>;

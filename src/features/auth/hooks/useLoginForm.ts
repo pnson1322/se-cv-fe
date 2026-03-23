@@ -14,6 +14,8 @@ export function useLoginForm() {
       email: "",
       password: "",
     },
+    mode: "onSubmit",
+    reValidateMode: "onChange",
   });
 
   const onSubmit = (values: LoginSchemaType) => {

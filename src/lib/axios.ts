@@ -1,7 +1,6 @@
-import axios from "axios";
+import axios, { AxiosError, AxiosHeaders, AxiosRequestConfig } from "axios";
 import {
   getAccessToken,
-  getRefreshToken,
   setAccessToken,
   clearAuthStorage,
 } from "@/features/auth/lib/auth-storage";
@@ -58,20 +57,33 @@ function processQueue(error: unknown, token: string | null = null) {
 api.interceptors.response.use(
   (response) => response,
 
-  async (error) => {
-    const originalRequest = error.config as typeof error.config & {
-      _retry?: boolean;
+  async (err) => {
+    const error = err as AxiosError & {
+      config?: AxiosRequestConfig & {
+        _retry?: boolean;
+        headers?: Record<string, string>;
+      };
     };
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const status = error.response?.status;
+    const originalRequest = error.config;
+
+    if (!originalRequest) {
+      return Promise.reject(error);
+    }
+
+    if ((status === 401 || status === 403) && !originalRequest._retry) {
       if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({
-            resolve,
-            reject,
-          });
+        return new Promise<string | null>((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
         }).then((token) => {
-          originalRequest.headers.Authorization = `Bearer ${token}`;
+          if (!originalRequest.headers) {
+            originalRequest.headers = new AxiosHeaders();
+          }
+
+          if (token) {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+          }
 
           return api(originalRequest);
         });
@@ -81,29 +93,36 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const refreshToken = getRefreshToken();
+        const refreshRes = await axios.post(
+          `${API_BASE_URL}/auth/refresh`,
+          {},
+          {
+            withCredentials: true,
+          },
+        );
 
-        const res = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-          refreshToken,
-        });
+        const newAccessToken = refreshRes.data?.data?.access_token;
 
-        const newAccessToken = res.data.accessToken;
+        if (!newAccessToken) {
+          throw new Error("No access token returned from refresh API");
+        }
 
         setAccessToken(newAccessToken);
 
         processQueue(null, newAccessToken);
 
+        if (!originalRequest.headers) {
+          originalRequest.headers = new AxiosHeaders();
+        }
+
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
         return api(originalRequest);
-      } catch (err) {
-        processQueue(err, null);
-
+      } catch (refreshErr) {
+        processQueue(refreshErr, null);
         clearAuthStorage();
-
         window.location.href = "/";
-
-        return Promise.reject(err);
+        return Promise.reject(refreshErr);
       } finally {
         isRefreshing = false;
       }

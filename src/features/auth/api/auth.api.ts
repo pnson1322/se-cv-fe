@@ -3,6 +3,8 @@ import type {
   LoginPayload,
   LoginResponse,
   RefreshTokenResponse,
+  RecruiterRegisterPayload,
+  RecruiterRegisterResponse,
 } from "../types/auth.types";
 
 export async function loginWithEmail(payload: LoginPayload) {
@@ -17,5 +19,15 @@ export async function refreshAccessToken() {
 
 export async function loginWithGoogle() {
   const res = await api.get("/auth/google");
+  return res.data;
+}
+
+export async function registerRecruiterAccount(
+  payload: RecruiterRegisterPayload,
+) {
+  const res = await api.post<RecruiterRegisterResponse>(
+    "/auth/register",
+    payload,
+  );
   return res.data;
 }

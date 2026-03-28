@@ -10,7 +10,6 @@ export const loginSchema = z.object({
     .string()
     .min(1, "Vui lòng nhập mật khẩu")
     .min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
-  rememberMe: z.boolean(),
 });
 
 export type LoginSchemaType = z.infer<typeof loginSchema>;

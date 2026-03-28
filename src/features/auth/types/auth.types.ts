@@ -42,3 +42,14 @@ export type AuthContextValue = {
   logout: () => void;
   setUser: (user: AuthUser | null) => void;
 };
+
+export type RecruiterRegisterPayload = {
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
+
+export type RecruiterRegisterResponse = {
+  success: boolean;
+  message: string;
+};

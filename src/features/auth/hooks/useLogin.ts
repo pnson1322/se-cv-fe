@@ -6,6 +6,7 @@ import { loginWithEmail } from "../api/auth.api";
 import { useAuth } from "./useAuth";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import { resolvePostLoginRoute } from "../lib/resolve-post-login-route";
 
 type ApiErrorResponse = {
   success?: boolean;
@@ -20,7 +21,7 @@ export function useLogin() {
     mutationFn: (payload: { email: string; password: string }) =>
       loginWithEmail(payload),
 
-    onSuccess: (response) => {
+    onSuccess: async (response) => {
       const accessToken = response.data.access_token;
       const user = response.data.user;
 
@@ -31,7 +32,14 @@ export function useLogin() {
 
       toast.success(response.message || "Đăng nhập thành công");
 
-      router.push("/dashboard");
+      try {
+        const nextRoute = await resolvePostLoginRoute(user);
+        router.push(nextRoute);
+      } catch (error) {
+        console.error("Resolve post-login route failed:", error);
+        toast.error("Không thể xác định trang tiếp theo");
+        router.push("/recruiter/company/create");
+      }
     },
 
     onError: (error: AxiosError<ApiErrorResponse>) => {

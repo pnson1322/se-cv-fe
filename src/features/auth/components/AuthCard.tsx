@@ -11,11 +11,11 @@ type AuthCardProps = {
 
 function RoleIcon({ role }: { role: Role }) {
   switch (role) {
-    case "student":
+    case "STUDENT":
       return <User size={34} strokeWidth={2.2} />;
-    case "recruiter":
+    case "COMPANY":
       return <Building2 size={34} strokeWidth={2.2} />;
-    case "admin":
+    case "ADMIN":
       return <Shield size={34} strokeWidth={2.2} />;
     default:
       return <User size={34} strokeWidth={2.2} />;

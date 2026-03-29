@@ -9,6 +9,7 @@ import UploadBox from "./UploadBox";
 import CustomSelect from "@/components/CustomSelect";
 import { useRecruiterRegisterForm } from "../hooks/useRecruiterRegisterForm";
 import { toast } from "sonner";
+import LogoutButton from "@/features/auth/components/LogoutButton";
 
 const COMPANY_SIZE_OPTIONS = [
   { label: "1-10 nhân viên", value: "1-10" },
@@ -317,13 +318,7 @@ export default function RecruiterRegisterForm() {
 
       {/* Footer */}
       <div className="flex justify-end gap-3 pt-6">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="rounded-xl border px-5 py-3"
-        >
-          Quay lại
-        </button>
+        <LogoutButton />
 
         <button
           type="submit"

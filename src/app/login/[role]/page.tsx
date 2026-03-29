@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import LoginPageContent from "@/features/auth/components/LoginPageContent";
-import { isValidRole } from "@/features/auth/constants/roles";
+import { slugToRole } from "@/features/auth/constants/roles";
 
 type LoginRolePageProps = {
   params: Promise<{
@@ -10,10 +10,11 @@ type LoginRolePageProps = {
 
 export default async function LoginRolePage({ params }: LoginRolePageProps) {
   const { role } = await params;
+  const mappedRole = slugToRole(role);
 
-  if (!isValidRole(role)) {
+  if (!mappedRole) {
     notFound();
   }
 
-  return <LoginPageContent role={role} />;
+  return <LoginPageContent role={mappedRole} />;
 }

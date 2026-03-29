@@ -95,7 +95,7 @@ export default function LoginForm({ role }: LoginFormProps) {
             </div>
           </div>
 
-          <GoogleAuthButton mode="login" />
+          <GoogleAuthButton />
         </>
       )}
 

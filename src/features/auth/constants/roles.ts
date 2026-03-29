@@ -33,8 +33,15 @@ export const ROLE_CONFIG = {
   },
 } as const;
 
-export function isValidRole(role: string): role is Role {
-  return (
-    role === ROLES.STUDENT || role === ROLES.RECRUITER || role === ROLES.ADMIN
-  );
+export function slugToRole(slug: string): Role | null {
+  switch (slug.toLowerCase()) {
+    case "student":
+      return ROLES.STUDENT;
+    case "recruiter":
+      return ROLES.RECRUITER;
+    case "admin":
+      return ROLES.ADMIN;
+    default:
+      return null;
+  }
 }

@@ -11,10 +11,11 @@ export type LoginPayload = {
 };
 
 export type AuthUser = {
-  id: string | number;
+  user_id: string | number;
   email: string;
-  fullName?: string;
   role: Role;
+  is_active: boolean;
+  is_verified: boolean;
 };
 
 export type LoginResponse = {
@@ -52,4 +53,8 @@ export type RecruiterRegisterPayload = {
 export type RecruiterRegisterResponse = {
   success: boolean;
   message: string;
+};
+
+export type GoogleCallbackResponse = {
+  url: string;
 };

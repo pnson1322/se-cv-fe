@@ -13,6 +13,8 @@ import type {
   VerifyOtpResponse,
   ResetPasswordPayload,
   ResetPasswordResponse,
+  ChangePasswordPayload,
+  ChangePasswordResponse,
 } from "../types/auth.types";
 
 export type GetCurrentUserResponse = {
@@ -80,6 +82,14 @@ export async function verifyOtp(payload: VerifyOtpPayload) {
 export async function resetPassword(payload: ResetPasswordPayload) {
   const res = await api.post<ResetPasswordResponse>(
     "/auth/reset-password",
+    payload,
+  );
+  return res.data;
+}
+
+export async function changePassword(payload: ChangePasswordPayload) {
+  const res = await api.post<ChangePasswordResponse>(
+    "/auth/change-password",
     payload,
   );
   return res.data;

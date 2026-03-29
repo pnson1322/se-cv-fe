@@ -1,16 +1,21 @@
 "use client";
 
+import { useEffect } from "react";
 import ForgotPasswordModal from "./ForgotPasswordModal";
 import OtpVerificationModal from "./OtpVerificationModal";
 import ResetPasswordModal from "./ResetPasswordModal";
 import { useForgotPasswordFlow } from "@/features/auth/hooks/useForgotPasswordFlow";
 
 type ForgotPasswordFlowProps = {
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export default function ForgotPasswordFlow({
   trigger,
+  open,
+  onOpenChange,
 }: ForgotPasswordFlowProps) {
   const {
     isOpen,
@@ -35,18 +40,39 @@ export default function ForgotPasswordFlow({
     isResettingPassword,
   } = useForgotPasswordFlow();
 
+  useEffect(() => {
+    if (open) {
+      openForgotPassword();
+    } else if (open === false && isOpen) {
+      closeForgotPassword();
+    }
+  }, [open, isOpen, openForgotPassword, closeForgotPassword]);
+
+  const handleClose = () => {
+    closeForgotPassword();
+    onOpenChange?.(false);
+  };
+
   return (
     <>
-      <span onClick={openForgotPassword} className="inline-block">
-        {trigger}
-      </span>
+      {trigger ? (
+        <span
+          onClick={() => {
+            openForgotPassword();
+            onOpenChange?.(true);
+          }}
+          className="inline-block"
+        >
+          {trigger}
+        </span>
+      ) : null}
 
       <ForgotPasswordModal
         isOpen={isOpen && step === "email"}
         email={email}
         onEmailChange={setEmail}
-        onClose={closeForgotPassword}
-        onCancel={closeForgotPassword}
+        onClose={handleClose}
+        onCancel={handleClose}
         onSubmit={submitEmail}
         isLoading={isSendingEmail}
       />
@@ -57,8 +83,8 @@ export default function ForgotPasswordFlow({
         otp={otp}
         countdown={countdown}
         onOtpChange={setOtp}
-        onClose={closeForgotPassword}
-        onCancel={closeForgotPassword}
+        onClose={handleClose}
+        onCancel={handleClose}
         onConfirm={submitOtp}
         onResend={resendOtp}
         isLoading={isVerifyingOtp}
@@ -71,8 +97,8 @@ export default function ForgotPasswordFlow({
         confirmPassword={confirmPassword}
         onPasswordChange={setPassword}
         onConfirmPasswordChange={setConfirmPassword}
-        onClose={closeForgotPassword}
-        onCancel={closeForgotPassword}
+        onClose={handleClose}
+        onCancel={handleClose}
         onSubmit={submitResetPassword}
         isLoading={isResettingPassword}
       />

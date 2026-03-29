@@ -72,6 +72,14 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    const requestUrl = originalRequest.url ?? "";
+    const isLoginRequest = requestUrl.includes("/auth/login");
+    const isRefreshRequest = requestUrl.includes("/auth/refresh");
+
+    if (isLoginRequest || isRefreshRequest) {
+      return Promise.reject(error);
+    }
+
     if ((status === 401 || status === 403) && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise<string | null>((resolve, reject) => {

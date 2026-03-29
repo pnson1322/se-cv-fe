@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -37,12 +37,12 @@ export function useForgotPasswordFlow() {
 
   const otpValue = useMemo(() => otp.join(""), [otp]);
 
-  const openForgotPassword = () => {
+  const openForgotPassword = useCallback(() => {
     setIsOpen(true);
     setStep("email");
-  };
+  }, []);
 
-  const closeForgotPassword = () => {
+  const closeForgotPassword = useCallback(() => {
     setIsOpen(false);
     setStep(null);
     setOtp(["", "", "", "", "", ""]);
@@ -50,7 +50,7 @@ export function useForgotPasswordFlow() {
     setPassword("");
     setConfirmPassword("");
     setResetToken("");
-  };
+  }, []);
 
   const forgotPasswordMutation = useMutation({
     mutationFn: forgotPassword,

@@ -10,7 +10,16 @@ import { resolvePostLoginRoute } from "../lib/resolve-post-login-route";
 
 type ApiErrorResponse = {
   success?: boolean;
-  message?: string;
+  statusCode?: number;
+  timestamp?: string;
+  path?: string;
+  message?:
+    | string
+    | {
+        message?: string;
+        error?: string;
+        statusCode?: number;
+      };
 };
 
 export function useLogin() {
@@ -43,12 +52,21 @@ export function useLogin() {
     },
 
     onError: (error: AxiosError<ApiErrorResponse>) => {
-      const message =
-        error?.response?.data?.message ||
-        "Đăng nhập thất bại, vui lòng thử lại";
+      const responseData = error.response?.data;
+
+      let message = "Đăng nhập thất bại, vui lòng thử lại";
+
+      if (typeof responseData?.message === "string") {
+        message = responseData.message;
+      } else if (
+        responseData?.message &&
+        typeof responseData.message === "object"
+      ) {
+        message =
+          responseData.message.message || responseData.message.error || message;
+      }
 
       toast.error(message);
-
       console.error("Login failed:", error);
     },
   });

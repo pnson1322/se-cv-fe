@@ -5,6 +5,7 @@ import { ROLE_CONFIG, type Role } from "../constants/roles";
 import GoogleAuthButton from "./GoogleAuthButton";
 import { useLoginForm } from "../hooks/useLoginForm";
 import { AlertCircle } from "lucide-react";
+import ForgotPasswordFlow from "./forgot-password/ForgotPasswordFlow";
 
 type LoginFormProps = {
   role: Role;
@@ -68,12 +69,16 @@ export default function LoginForm({ role }: LoginFormProps) {
       </div>
 
       <div className="flex justify-end items-center gap-4">
-        <button
-          type="button"
-          className="text-sm font-medium text-(--color-primary) transition hover:underline"
-        >
-          Quên mật khẩu?
-        </button>
+        <ForgotPasswordFlow
+          trigger={
+            <button
+              type="button"
+              className="text-sm font-medium text-(--color-primary) transition hover:underline"
+            >
+              Quên mật khẩu?
+            </button>
+          }
+        />
       </div>
 
       <button

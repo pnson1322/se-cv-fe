@@ -19,7 +19,6 @@ export function useLoginForm() {
   });
 
   const onSubmit = (values: LoginSchemaType) => {
-    console.log("hsdsdsdsd");
     login({
       email: values.email,
       password: values.password,

@@ -22,3 +22,13 @@ body {
   color: var(--color-text);
   background: var(--color-surface);
 }
+
+.hide-password-toggle::-ms-reveal,
+.hide-password-toggle::-ms-clear {
+  display: none;
+}
+
+.hide-password-toggle::-webkit-credentials-auto-fill-button,
+.hide-password-toggle::-webkit-textfield-decoration-container {
+  display: none !important;
+}

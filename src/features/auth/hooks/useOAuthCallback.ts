@@ -46,5 +46,5 @@ export function useOAuthCallback() {
     }
 
     handleOAuthCallback();
-  }, [auth, router, searchParams]);
+  }, [searchParams]);
 }

@@ -7,6 +7,12 @@ import type {
   RecruiterRegisterResponse,
   GoogleCallbackResponse,
   AuthUser,
+  ForgotPasswordPayload,
+  ForgotPasswordResponse,
+  VerifyOtpPayload,
+  VerifyOtpResponse,
+  ResetPasswordPayload,
+  ResetPasswordResponse,
 } from "../types/auth.types";
 
 export type GetCurrentUserResponse = {
@@ -55,5 +61,26 @@ export async function getGoogleCallbackUrl(code: string) {
 
 export async function getCurrentUser() {
   const res = await api.get<GetCurrentUserResponse>("/auth/me");
+  return res.data;
+}
+
+export async function forgotPassword(payload: ForgotPasswordPayload) {
+  const res = await api.post<ForgotPasswordResponse>(
+    "/auth/forgot-password",
+    payload,
+  );
+  return res.data;
+}
+
+export async function verifyOtp(payload: VerifyOtpPayload) {
+  const res = await api.post<VerifyOtpResponse>("/auth/verify-otp", payload);
+  return res.data;
+}
+
+export async function resetPassword(payload: ResetPasswordPayload) {
+  const res = await api.post<ResetPasswordResponse>(
+    "/auth/reset-password",
+    payload,
+  );
   return res.data;
 }

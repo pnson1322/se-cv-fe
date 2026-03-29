@@ -58,3 +58,35 @@ export type RecruiterRegisterResponse = {
 export type GoogleCallbackResponse = {
   url: string;
 };
+
+export type ForgotPasswordPayload = {
+  email: string;
+};
+
+export type ForgotPasswordResponse = {
+  success: boolean;
+  message: string;
+};
+
+export type VerifyOtpPayload = {
+  email: string;
+  otp: string;
+};
+
+export type VerifyOtpResponse = {
+  success: string;
+  message: string;
+  data: {
+    resetToken: string;
+  };
+};
+
+export type ResetPasswordPayload = {
+  resetToken: string;
+  newPassword: string;
+  confirmPassword: string;
+};
+
+export type ResetPasswordResponse = {
+  message: string;
+};

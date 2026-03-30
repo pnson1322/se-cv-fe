@@ -32,3 +32,13 @@ body {
 .hide-password-toggle::-webkit-textfield-decoration-container {
   display: none !important;
 }
+
+@keyframes floatY {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}

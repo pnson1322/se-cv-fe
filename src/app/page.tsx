@@ -1,5 +1,5 @@
-import RoleSelection from "@/features/auth/components/RoleSelection";
+import { redirect } from "next/navigation";
 
 export default function HomePage() {
-  return <RoleSelection />;
+  redirect("/login");
 }

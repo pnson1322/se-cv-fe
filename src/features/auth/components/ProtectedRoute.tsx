@@ -15,7 +15,7 @@ type ProtectedRouteProps = {
 export default function ProtectedRoute({
   children,
   allowedRoles,
-  redirectTo = "/",
+  redirectTo = "/login",
 }: ProtectedRouteProps) {
   const router = useRouter();
   const { isAuthenticated, isLoading, user } = useAuth();

@@ -1,17 +1,13 @@
-import { Role } from "../constants/roles";
+import AuthSplitLayout from "./AuthSplitLayout";
 import AuthCard from "./AuthCard";
 import LoginForm from "./LoginForm";
 
-type LoginPageContentRole = {
-  role: Role;
-};
-
-export default function LoginPageContent({ role }: LoginPageContentRole) {
+export default function LoginPageContent() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-(--color-surface) px-6 py-12">
-      <AuthCard role={role}>
-        <LoginForm role={role} />
+    <AuthSplitLayout>
+      <AuthCard>
+        <LoginForm />
       </AuthCard>
-    </main>
+    </AuthSplitLayout>
   );
 }

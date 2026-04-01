@@ -1,7 +1,6 @@
 "use client";
 
 import { AlertCircle, Building2, Image, Mail, MapPin } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
 import { useWatch } from "react-hook-form";
 import SectionTitle from "./SectionTitle";
@@ -31,8 +30,6 @@ function FieldError({ message }: { message?: string }) {
 }
 
 export default function RecruiterRegisterForm() {
-  const router = useRouter();
-
   const {
     register,
     handleSubmit,
@@ -82,7 +79,6 @@ export default function RecruiterRegisterForm() {
 
   return (
     <form noValidate onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-      {/* Upload */}
       <div className="grid gap-4 md:grid-cols-3">
         <div>
           <UploadBox
@@ -100,7 +96,7 @@ export default function RecruiterRegisterForm() {
             }
             onFileChange={(files) => {
               const file = files?.[0];
-              if (!file) return; // ✅ cancel thì giữ ảnh cũ
+              if (!file) return;
               setValue("logo", file, {
                 shouldValidate: true,
                 shouldDirty: true,
@@ -127,7 +123,7 @@ export default function RecruiterRegisterForm() {
             }
             onFileChange={(files) => {
               const file = files?.[0];
-              if (!file) return; // ✅ cancel thì giữ ảnh cũ
+              if (!file) return;
               setValue("coverImage", file, {
                 shouldValidate: true,
                 shouldDirty: true,
@@ -141,7 +137,6 @@ export default function RecruiterRegisterForm() {
         </div>
       </div>
 
-      {/* Company */}
       <section>
         <SectionTitle
           icon={<Building2 size={18} />}
@@ -223,7 +218,6 @@ export default function RecruiterRegisterForm() {
         </div>
       </section>
 
-      {/* Address */}
       <section>
         <SectionTitle icon={<MapPin size={18} />} title="Địa chỉ công ty" />
 
@@ -235,7 +229,6 @@ export default function RecruiterRegisterForm() {
         <FieldError message={errors.address?.message} />
       </section>
 
-      {/* Contact */}
       <section>
         <SectionTitle icon={<Mail size={18} />} title="Liên hệ" />
 
@@ -260,7 +253,6 @@ export default function RecruiterRegisterForm() {
         </div>
       </section>
 
-      {/* Office images */}
       <section>
         <SectionTitle
           icon={<Image size={18} aria-label="Preview ảnh văn phòng" />}
@@ -316,7 +308,6 @@ export default function RecruiterRegisterForm() {
         />
       </section>
 
-      {/* Footer */}
       <div className="flex justify-end gap-3 pt-6">
         <LogoutButton />
 

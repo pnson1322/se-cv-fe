@@ -46,13 +46,7 @@ export default function ProtectedRoute({
   ]);
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-(--color-surface) px-6">
-        <div className="rounded-2xl border border-(--color-border) bg-white px-6 py-4 shadow-md">
-          <p className="text-(--color-text)">Đang kiểm tra đăng nhập...</p>
-        </div>
-      </div>
-    );
+    return <div className="min-h-screen bg-[#F3F4F6]" />;
   }
 
   if (!isAuthenticated) {

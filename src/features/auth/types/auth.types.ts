@@ -13,6 +13,8 @@ export type LoginPayload = {
 export type AuthUser = {
   user_id: string | number;
   email: string;
+  full_name?: string;
+  avatar_url?: string | null;
   role: Role;
   is_active: boolean;
   is_verified: boolean;

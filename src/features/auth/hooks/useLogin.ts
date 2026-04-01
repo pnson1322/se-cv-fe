@@ -39,15 +39,14 @@ export function useLogin() {
         user,
       });
 
-      toast.success(response.message || "Đăng nhập thành công");
-
       try {
         const nextRoute = await resolvePostLoginRoute(user);
-        router.push(nextRoute);
+        toast.success(response.message || "Đăng nhập thành công");
+        router.replace(nextRoute);
       } catch (error) {
         console.error("Resolve post-login route failed:", error);
         toast.error("Không thể xác định trang tiếp theo");
-        router.push("/recruiter/company/create");
+        router.replace("/login");
       }
     },
 

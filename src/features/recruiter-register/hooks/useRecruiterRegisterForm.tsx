@@ -48,7 +48,7 @@ export function useRecruiterRegisterForm() {
 
     onError: (error: AxiosError<CreateCompanyErrorResponse>) => {
       const message =
-        error.response?.data?.message ||
+        error.response?.data?.message?.message ||
         "Đăng ký công ty thất bại, vui lòng thử lại";
 
       toast.error(message);

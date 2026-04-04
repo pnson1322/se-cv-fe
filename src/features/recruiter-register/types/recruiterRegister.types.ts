@@ -21,6 +21,12 @@ export type CreateCompanyResponse = {
 };
 
 export type CreateCompanyErrorResponse = {
-  success?: boolean;
-  message?: string;
+  success: boolean;
+  statusCode: number;
+  timestamp: string;
+  path: string;
+  message: {
+    message: string;
+    statusCode: number;
+  };
 };

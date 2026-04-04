@@ -5,6 +5,9 @@ import Link from "next/link";
 import { BadgeCheck, BriefcaseBusiness, Menu, X, LogOut } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { getAccessToken } from "@/features/auth/lib/auth-storage";
+import { useNotificationSocket } from "@/features/notification/hooks/useNotificationSocket";
+import { disconnectSocket } from "@/lib/socket";
 import type { CompanyProfile } from "@/features/company/types/company.types";
 import { getMyCompany } from "@/features/company/api/company.api";
 import {
@@ -25,6 +28,18 @@ export default function AppHeader() {
   const [company, setCompany] = useState<CompanyProfile | null>(null);
   const [openMobile, setOpenMobile] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+
+  const socketToken = useMemo(
+    () => getAccessToken() ?? undefined,
+    [user?.user_id],
+  );
+
+  useNotificationSocket(socketToken, {
+    enabled: !!user,
+    showToast: !isNotificationOpen,
+    onlyToastWhenTabHidden: true,
+  });
 
   useEffect(() => {
     if (user?.role !== "COMPANY") return;
@@ -113,6 +128,8 @@ export default function AppHeader() {
 
   const handleLogout = () => {
     setOpenMobile(false);
+    setIsNotificationOpen(false);
+    disconnectSocket();
     logout();
     router.replace("/login");
   };
@@ -170,7 +187,7 @@ export default function AppHeader() {
           </div>
 
           <div className="ml-auto flex shrink-0 items-center gap-3 md:gap-5">
-            <HeaderNotification />
+            <HeaderNotification onOpenChange={setIsNotificationOpen} />
             <div className="hidden h-8 w-px bg-white/15 md:block" />
             <HeaderUserMenu
               name={headerState.name}

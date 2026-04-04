@@ -7,9 +7,9 @@ import AppFooter from "@/components/layout/AppFooter";
 export default function RecruiterLayout({ children }: { children: ReactNode }) {
   return (
     <ProtectedRoute allowedRoles={[ROLES.RECRUITER]}>
-      <div className="min-h-screen bg-[#F3F4F6]">
+      <div className="min-h-screen bg-[#F3F4F6] flex flex-col">
         <AppHeader />
-        <main className="px-6 py-6">{children}</main>
+        <main className="px-6 py-6 flex-1">{children}</main>
         <AppFooter />
       </div>
     </ProtectedRoute>

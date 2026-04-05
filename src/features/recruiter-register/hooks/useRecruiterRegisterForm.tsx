@@ -43,7 +43,7 @@ export function useRecruiterRegisterForm() {
 
     onSuccess: (response) => {
       toast.success(response.message || "Đăng ký công ty thành công");
-      router.push("/recruiter/dashboard");
+      router.push("/recruiter/profile");
     },
 
     onError: (error: AxiosError<CreateCompanyErrorResponse>) => {

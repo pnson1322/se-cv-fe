@@ -16,7 +16,7 @@ export async function resolvePostLoginRoute(user: AuthUser) {
       const companyRes = await getMyCompany();
       const company = companyRes.data;
 
-      const hasNoCompany = !company || !company.company_id;
+      const hasNoCompany = !company || !company.companyId;
 
       if (hasNoCompany) {
         return "/recruiter/company/create";

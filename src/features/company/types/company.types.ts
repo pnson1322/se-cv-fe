@@ -6,37 +6,114 @@ export type CompanyStatus =
   | string;
 
 export type OfficeImage = {
-  image_id: number;
-  company_id: number;
-  image_url: string;
+  imageId: number;
+  companyId: number;
+  imageUrl: string;
+  createAt: string;
 };
 
 export type CompanyProfile = {
-  company_id?: number;
-  user_id?: number;
-  company_name?: string;
+  companyId?: number;
+  userId?: number;
+  companyName?: string;
   industry?: string;
   slogan?: string | null;
-  company_size?: string | null;
+  companySize?: string | null;
   website?: string | null;
   description?: string | null;
   address?: string | null;
-  contact_email?: string | null;
-  contact_phone?: string | null;
-  logo_url?: string | null;
-  cover_image_url?: string | null;
-  is_verified?: boolean;
+  contactEmail?: string | null;
+  contactPhone?: string | null;
+  logoUrl?: string | null;
+  coverImageUrl?: string | null;
   rating?: number;
-  total_jobs_posted?: number;
-  total_followers?: number;
+  totalJobsPosted?: number;
+  totalFollowers?: number;
   status?: CompanyStatus;
-  created_at?: string;
-  updated_at?: string;
-  office_images?: OfficeImage[];
+  createdAt?: string;
+  updatedAt?: string;
+  officeImages?: OfficeImage[];
+  adminNote: string;
 };
 
-export type GetMyCompanyResponse = {
+export type ApiResponse<T> = {
   success: boolean;
   message: string;
-  data: CompanyProfile | null;
+  data: T | null;
+};
+
+export type BasicInfoBody = {
+  company_name?: string;
+  slogan?: string | null;
+};
+
+export type ContactBody = {
+  website?: string | null;
+  contact_email?: string | null;
+  contact_phone?: string | null;
+};
+
+export type DetailBody = {
+  industry?: string;
+  company_size?: string | null;
+  address?: string | null;
+};
+
+export type EmptyBody = Record<string, never>;
+
+// for Admin:
+export type AdminCompanyDataPart = {
+  companyId: number;
+  companyName: string;
+  logoUrl: string;
+  industry: string;
+  status: CompanyStatus;
+  rating: number;
+  followers: number;
+  totalJobs: number;
+  companySize: string;
+  createdAt: string;
+};
+
+export type AdminCompanyStatusPart = {
+  status: string;
+  count: number;
+};
+
+export type AdminPaginationMeta = {
+  currentPage: number;
+  itemsPerPage: number;
+  totalPages: number;
+};
+
+export type AdminCompanyListData = {
+  data: AdminCompanyDataPart[];
+  status: AdminCompanyStatusPart[];
+  meta: AdminPaginationMeta;
+};
+
+export type ChangeStatusBody = {
+  status: CompanyStatus;
+  admin_note?: string;
+};
+
+// for Student:
+export type StudentCompanyDataPart = {
+  companyId: number;
+  companyName: string;
+  logoUrl: string;
+  industry: string;
+  activeJobs: number;
+};
+
+export type StudentPaginationMeta = {
+  currentPage: number;
+  itemsPerPage: number;
+  totalItems: number;
+  totalPages: number;
+};
+
+export type StudentCompanyListData = {
+  data: StudentCompanyDataPart[];
+  meta: StudentPaginationMeta;
 };

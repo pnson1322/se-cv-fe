@@ -29,6 +29,7 @@ export default function CustomSelect({
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   const selectedOption = options.find((option) => option.value === value);
+  const shouldShowLabel = label.trim().length > 0;
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -48,9 +49,11 @@ export default function CustomSelect({
 
   return (
     <div ref={wrapperRef} className="relative">
-      <label className="mb-2 block text-sm font-medium text-(--color-text)">
-        {label}
-      </label>
+      {shouldShowLabel && (
+        <label className="mb-2 block text-sm font-medium text-(--color-text)">
+          {label}
+        </label>
+      )}
 
       <button
         type="button"

@@ -107,7 +107,7 @@ export default function LoginForm() {
   };
 
   return (
-    <form noValidate onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form noValidate onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       {!manualMode ? (
         <>
           <Input
@@ -179,7 +179,7 @@ export default function LoginForm() {
           trigger={
             <button
               type="button"
-              className="text-base font-medium text-[#1E3A8A] transition hover:underline"
+              className="text-sm font-medium text-[#1E3A8A] transition hover:underline"
             >
               Quên mật khẩu?
             </button>
@@ -190,7 +190,7 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full rounded-2xl bg-[#06B6D4] px-4 py-4 text-lg font-bold text-white shadow-md transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-2xl bg-[#06B6D4] px-4 py-3.5 text-base font-bold text-white shadow-md transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
       </button>
@@ -199,7 +199,7 @@ export default function LoginForm() {
 
       <GoogleAuthButton />
 
-      <div className="rounded-2xl bg-[#F3F4F6] px-5 py-4 text-center text-base text-slate-600">
+      <div className="rounded-2xl bg-[#F3F4F6] px-4 py-3.5 text-center text-sm text-slate-600">
         <span>Bạn là nhà tuyển dụng? </span>
         <Link
           href="/register/recruiter"
@@ -222,7 +222,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
     <div>
       <label
         htmlFor={inputId}
-        className="mb-2.5 block text-[17px] font-semibold text-[#111827]"
+        className="mb-2 block text-base font-semibold text-[#111827]"
       >
         {label}
       </label>
@@ -232,7 +232,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
         id={inputId}
         name={name}
         {...props}
-        className={`w-full rounded-2xl border px-4 py-4 text-base text-[#111827] outline-none transition ${
+        className={`w-full rounded-2xl border px-4 py-3.5 text-[15px] text-[#111827] outline-none transition ${
           error
             ? "border-red-400 bg-red-50/40 focus:border-red-400 focus:ring-4 focus:ring-red-100"
             : "border-slate-200 bg-[#F8FAFC] focus:border-[#06B6D4] focus:ring-4 focus:ring-cyan-100"
@@ -258,7 +258,7 @@ function Divider() {
         <div className="w-full border-t border-slate-200" />
       </div>
       <div className="relative flex justify-center">
-        <span className="bg-white px-3 text-base text-slate-400">hoặc</span>
+        <span className="bg-white px-3 text-sm text-slate-400">hoặc</span>
       </div>
     </div>
   );

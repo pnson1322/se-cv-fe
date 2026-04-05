@@ -39,64 +39,64 @@ export default function HeaderUserMenu({ name, roleLabel, avatarUrl }: Props) {
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-3 rounded-xl px-2.5 py-1.5 text-white transition hover:bg-white/12"
+        className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-white transition hover:bg-white/12"
       >
-        <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-cyan-500 shadow-[0_8px_18px_rgba(6,182,212,0.28)]">
+        <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-cyan-500 shadow-[0_6px_14px_rgba(6,182,212,0.22)]">
           {avatarUrl ? (
             <Image
               src={avatarUrl}
               alt={name}
-              width={44}
-              height={44}
+              width={40}
+              height={40}
               className="h-full w-full object-cover"
             />
           ) : (
-            <UserRound size={21} />
+            <UserRound size={18} />
           )}
         </div>
 
         <div className="text-left leading-tight">
-          <p className="max-w-35 truncate text-[1.05rem] font-bold">{name}</p>
-          <p className="mt-0.5 text-[0.9rem] text-white/82">{roleLabel}</p>
+          <p className="max-w-32 truncate text-[15px] font-semibold">{name}</p>
+          <p className="mt-0.5 text-[13px] text-white/82">{roleLabel}</p>
         </div>
 
-        <ChevronDown size={17} className="ml-0.5" />
+        <ChevronDown size={15} className="ml-0.5" />
       </button>
 
       {open && (
-        <div className="absolute right-0 top-12 z-210 w-65 overflow-hidden rounded-[22px] bg-white shadow-[0_18px_50px_rgba(15,23,42,0.18)]">
-          <div className="bg-linear-to-r from-cyan-500 to-cyan-600 px-5 py-5 text-white">
+        <div className="absolute right-0 top-11 z-210 w-56 overflow-hidden rounded-2xl bg-white shadow-[0_16px_40px_rgba(15,23,42,0.16)]">
+          <div className="bg-linear-to-r from-cyan-500 to-cyan-600 px-4 py-4 text-white">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl bg-white/18">
+              <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-white/18">
                 {avatarUrl ? (
                   <Image
                     src={avatarUrl}
                     alt={name}
-                    width={48}
-                    height={48}
+                    width={40}
+                    height={40}
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <UserRound size={22} />
+                  <UserRound size={18} />
                 )}
               </div>
 
-              <div>
-                <p className="max-w-37.5 truncate text-[1.3rem] font-bold leading-tight">
+              <div className="min-w-0">
+                <p className="max-w-32 truncate text-[15px] font-bold leading-tight">
                   {name}
                 </p>
-                <p className="mt-1 text-[0.95rem] text-white/90">{roleLabel}</p>
+                <p className="mt-0.5 text-[12px] text-white/90">{roleLabel}</p>
               </div>
             </div>
           </div>
 
-          <div className="border-t border-slate-100 px-4 py-3">
+          <div className="border-t border-slate-100 px-3 py-2.5">
             <button
               type="button"
               onClick={handleLogout}
-              className="flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-[1rem] font-semibold text-red-500 transition hover:bg-red-50"
+              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-[14px] font-semibold text-red-500 transition hover:bg-red-50"
             >
-              <LogOut size={20} />
+              <LogOut size={17} />
               <span>Đăng xuất</span>
             </button>
           </div>

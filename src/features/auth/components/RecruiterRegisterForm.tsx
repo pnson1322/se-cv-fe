@@ -31,12 +31,12 @@ function FieldError({ message }: { message?: string }) {
 function Input({ label, error, className, ...props }: InputProps) {
   return (
     <div>
-      <label className="mb-2.5 block text-[17px] font-semibold text-[#111827]">
+      <label className="mb-2 block text-base font-semibold text-[#111827]">
         {label}
       </label>
       <input
         {...props}
-        className={`w-full rounded-2xl border px-4 py-4 text-base text-[#111827] outline-none transition ${
+        className={`w-full rounded-2xl border px-4 py-3.5 text-[15px] text-[#111827] outline-none transition ${
           error
             ? "border-red-400 bg-red-50/40 focus:border-red-400 focus:ring-4 focus:ring-red-100"
             : "border-slate-200 bg-[#F8FAFC] focus:border-[#06B6D4] focus:ring-4 focus:ring-cyan-100"
@@ -72,7 +72,7 @@ export default function RecruiterRegisterForm() {
   };
 
   return (
-    <form noValidate onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <form noValidate onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <Input
         label="Email"
         type="text"
@@ -100,7 +100,7 @@ export default function RecruiterRegisterForm() {
       <button
         type="submit"
         disabled={isLoading}
-        className="w-full rounded-2xl bg-[#06B6D4] px-4 py-4 text-lg font-bold text-white shadow-md transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-2xl bg-[#06B6D4] px-4 py-3.5 text-base font-bold text-white shadow-md transition hover:brightness-95 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isLoading ? "Đang đăng ký..." : "Đăng ký"}
       </button>
@@ -110,13 +110,13 @@ export default function RecruiterRegisterForm() {
           <div className="w-full border-t border-slate-200" />
         </div>
         <div className="relative flex justify-center">
-          <span className="bg-white px-3 text-base text-slate-400">hoặc</span>
+          <span className="bg-white px-3 text-sm text-slate-400">hoặc</span>
         </div>
       </div>
 
       <GoogleAuthButton />
 
-      <div className="pt-1 text-center text-base text-slate-600">
+      <div className="pt-1 text-center text-sm text-slate-600">
         <span>Đã có tài khoản? </span>
         <Link
           href="/login"

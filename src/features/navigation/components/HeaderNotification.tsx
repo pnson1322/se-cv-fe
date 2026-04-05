@@ -117,33 +117,47 @@ export default function HeaderNotification({
     setOpen((prev) => !prev);
   };
 
+  const handleItemClick = (notificationId: number) => {
+    markNotificationAsRead(notificationId);
+  };
+
+  const handleItemKeyDown = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+    notificationId: number,
+  ) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      markNotificationAsRead(notificationId);
+    }
+  };
+
   return (
     <div className="relative" ref={wrapperRef}>
       <button
         type="button"
         onClick={handleToggleOpen}
-        className="relative rounded-xl p-1 text-white/92 transition hover:bg-white/10 hover:text-white"
+        className="relative rounded-lg p-1 text-white/92 transition hover:bg-white/10 hover:text-white"
         aria-label="Mở thông báo"
       >
         <Bell size={24} />
         {unreadCount > 0 && (
-          <span className="absolute -right-1.5 -top-1.5 min-w-5 rounded-full bg-red-500 px-1.5 text-center text-[11px] font-bold leading-5 text-white">
+          <span className="absolute -right-1 -top-1 min-w-5 rounded-full bg-red-500 px-1 text-center text-[12px] font-bold leading-4.5 text-white">
             {unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 top-11 z-210 w-[92vw] max-w-107.5 overflow-hidden rounded-[22px] bg-white shadow-[0_18px_50px_rgba(15,23,42,0.18)]">
-          <div className="bg-linear-to-r from-cyan-500 to-cyan-600 px-5 py-4 text-white">
+        <div className="absolute right-0 top-10 z-210 w-[88vw] max-w-96 overflow-hidden rounded-2xl bg-white shadow-[0_16px_40px_rgba(15,23,42,0.16)]">
+          <div className="bg-linear-to-r from-cyan-500 to-cyan-600 px-4 py-3.5 text-white">
             <div className="flex items-center justify-between gap-3">
-              <h3 className="text-[1.5rem] font-bold sm:text-[1.7rem]">
+              <h3 className="text-[1.15rem] font-bold sm:text-[1.25rem]">
                 Thông báo
               </h3>
 
               <div className="flex items-center gap-2">
                 {unreadCount > 0 && (
-                  <span className="rounded-full bg-white/18 px-3.5 py-1 text-[0.95rem] font-medium sm:text-[1rem]">
+                  <span className="rounded-full bg-white/18 px-2.5 py-1 text-[12px] font-medium">
                     {unreadCount} mới
                   </span>
                 )}
@@ -153,12 +167,12 @@ export default function HeaderNotification({
                     type="button"
                     onClick={clearAllNotifications}
                     disabled={isDeletingAll}
-                    className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-sm font-medium transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-70"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-1.5 text-[12px] font-medium transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-70"
                   >
                     {isDeletingAll ? (
-                      <Loader2 size={14} className="animate-spin" />
+                      <Loader2 size={13} className="animate-spin" />
                     ) : (
-                      <Trash2 size={14} />
+                      <Trash2 size={13} />
                     )}
                     Xóa tất cả
                   </button>
@@ -168,55 +182,59 @@ export default function HeaderNotification({
           </div>
 
           {isLoading ? (
-            <div className="flex items-center justify-center px-6 py-10">
-              <Loader2 className="animate-spin text-slate-400" size={22} />
+            <div className="flex items-center justify-center px-5 py-8">
+              <Loader2 className="animate-spin text-slate-400" size={20} />
             </div>
           ) : isEmpty ? (
-            <div className="px-6 py-10 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-                <Bell size={22} />
+            <div className="px-5 py-8 text-center">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+                <Bell size={20} />
               </div>
-              <p className="mt-4 text-[1rem] font-semibold text-slate-700">
+              <p className="mt-3 text-[15px] font-semibold text-slate-700">
                 Chưa có thông báo nào
               </p>
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="mt-1 text-[13px] text-slate-400">
                 Thông báo mới sẽ xuất hiện tại đây.
               </p>
             </div>
           ) : (
-            <div ref={scrollRef} className="max-h-[70vh] overflow-y-auto">
+            <div ref={scrollRef} className="max-h-[65vh] overflow-y-auto">
               {notifications.map((item) => (
-                <button
+                <div
                   key={item.notification_id}
-                  type="button"
-                  onClick={() => markNotificationAsRead(item.notification_id)}
-                  className={`group flex w-full items-start gap-4 border-b border-slate-100 px-5 py-4 text-left transition ${
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => handleItemClick(item.notification_id)}
+                  onKeyDown={(event) =>
+                    handleItemKeyDown(event, item.notification_id)
+                  }
+                  className={`group flex w-full cursor-pointer items-start gap-3 border-b border-slate-100 px-4 py-3.5 text-left transition focus:outline-none focus:ring-2 focus:ring-cyan-300 ${
                     !item.is_read
                       ? "bg-cyan-50/60 hover:bg-cyan-50"
                       : "bg-white hover:bg-slate-50"
                   }`}
                 >
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-fuchsia-500 text-white">
-                    <Bell size={18} />
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-fuchsia-500 text-white">
+                    <Bell size={16} />
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-[1rem] font-bold text-[#111827]">
+                        <p className="text-[14px] font-bold text-[#111827]">
                           {item.title}
                         </p>
-                        <p className="mt-1 text-[0.98rem] leading-7 text-slate-600">
+                        <p className="mt-1 text-[14px] leading-6 text-slate-600">
                           {item.message}
                         </p>
-                        <p className="mt-2 text-[0.94rem] text-slate-400">
+                        <p className="mt-1.5 text-[12px] text-slate-400">
                           {formatNotificationTime(item.created_at)}
                         </p>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         {!item.is_read && (
-                          <span className="mt-1 h-3 w-3 shrink-0 rounded-full bg-cyan-500" />
+                          <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-cyan-500" />
                         )}
 
                         <button
@@ -230,29 +248,29 @@ export default function HeaderNotification({
                           aria-label="Xóa thông báo"
                         >
                           {deletingId === item.notification_id ? (
-                            <Loader2 size={16} className="animate-spin" />
+                            <Loader2 size={14} className="animate-spin" />
                           ) : (
-                            <X size={16} />
+                            <X size={14} />
                           )}
                         </button>
                       </div>
                     </div>
                   </div>
-                </button>
+                </div>
               ))}
 
-              <div ref={loadMoreRef} className="py-4 text-center">
+              <div ref={loadMoreRef} className="py-3 text-center">
                 {isFetchingNextPage ? (
                   <Loader2
                     className="mx-auto animate-spin text-slate-400"
-                    size={18}
+                    size={16}
                   />
                 ) : hasNextPage ? (
-                  <span className="text-sm text-slate-400">
+                  <span className="text-[12px] text-slate-400">
                     Kéo xuống để tải thêm
                   </span>
                 ) : (
-                  <span className="text-sm text-slate-400">
+                  <span className="text-[12px] text-slate-400">
                     Đã tải hết thông báo
                   </span>
                 )}

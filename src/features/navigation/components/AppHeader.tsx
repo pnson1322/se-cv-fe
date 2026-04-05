@@ -108,8 +108,8 @@ export default function AppHeader() {
 
     return {
       roleLabel: "Nhà tuyển dụng",
-      name: user.full_name || company?.company_name || user.email.split("@")[0],
-      avatarUrl: user.avatar_url || company?.logo_url || null,
+      name: user.full_name || company?.companyName || user.email.split("@")[0],
+      avatarUrl: user.avatar_url || company?.logoUrl || null,
       navItems: isApproved ? recruiterNav : recruiterPendingNav,
       pendingBadge: isApproved ? null : "Chờ duyệt",
     };

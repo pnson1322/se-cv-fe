@@ -33,7 +33,11 @@ export const studentNav: NavItem[] = [
 
 export const recruiterNav: NavItem[] = [
   { label: "Tổng quan", href: "/recruiter/dashboard", icon: BarChart3 },
-  { label: "Tin tuyển dụng", href: "/recruiter/jobs", icon: BriefcaseBusiness },
+  {
+    label: "Tin tuyển dụng",
+    href: "/recruiter/job-postings",
+    icon: BriefcaseBusiness,
+  },
   { label: "Ứng viên", href: "/recruiter/candidates", icon: Users },
   { label: "Tìm ứng viên", href: "/recruiter/search-candidates", icon: Search },
   { label: "Tin nhắn", href: "/recruiter/messages", icon: MessageSquare },

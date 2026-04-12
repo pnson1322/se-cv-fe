@@ -58,21 +58,23 @@ export default function CustomSelect({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className={`flex w-full items-center justify-between rounded-xl border bg-white px-4 py-3 text-left outline-none transition focus:ring-2 ${
+        className={`flex h-11 w-full items-center justify-between rounded-xl border bg-white px-4 text-left outline-none transition focus:ring-2 ${
           error
             ? "border-red-400 focus:border-red-400 focus:ring-red-100"
             : "border-(--color-border) focus:border-(--color-accent) focus:ring-(--color-accent)/20"
         }`}
       >
         <span
-          className={selectedOption ? "text-(--color-text)" : "text-slate-400"}
+          className={`min-w-0 flex-1 truncate pr-3 ${
+            selectedOption ? "text-(--color-text)" : "text-slate-400"
+          }`}
         >
           {selectedOption ? selectedOption.label : placeholder}
         </span>
 
         <ChevronDown
           size={18}
-          className={`text-slate-500 transition ${open ? "rotate-180" : ""}`}
+          className={`shrink-0 text-slate-500 transition ${open ? "rotate-180" : ""}`}
         />
       </button>
 
@@ -91,9 +93,13 @@ export default function CustomSelect({
                 }}
                 className="flex w-full items-center justify-between px-4 py-3 text-left text-sm text-(--color-text) transition hover:bg-slate-50"
               >
-                <span>{option.label}</span>
+                <span className="min-w-0 flex-1 truncate">{option.label}</span>
+
                 {isSelected && (
-                  <Check size={16} className="text-(--color-accent)" />
+                  <Check
+                    size={16}
+                    className="ml-3 shrink-0 text-(--color-accent)"
+                  />
                 )}
               </button>
             );

@@ -1,4 +1,4 @@
-import CompanyProfilePageContent from "@/features/company/components/profile/CompanyProfilePageContent";
+import CompanyProfilePageContent from "@/features/company-profile/components/profile/CompanyProfilePageContent";
 import ProtectedRoute from "@/features/auth/components/ProtectedRoute";
 
 type Props = {

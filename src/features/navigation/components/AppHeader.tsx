@@ -8,8 +8,8 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { getAccessToken } from "@/features/auth/lib/auth-storage";
 import { useNotificationSocket } from "@/features/notification/hooks/useNotificationSocket";
 import { disconnectSocket } from "@/lib/socket";
-import type { CompanyProfile } from "@/features/company/types/company.types";
-import { getMyCompany } from "@/features/company/api/company.api";
+import type { CompanyProfile } from "@/features/company-profile/types/company.types";
+import { getMyCompany } from "@/features/company-profile/api/company.api";
 import {
   adminNav,
   recruiterNav,

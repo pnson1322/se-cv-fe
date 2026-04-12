@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { getMyCompany } from "@/features/company/api/company.api";
+import { getMyCompany } from "@/features/company-profile/api/company.api";
 import type { AuthUser } from "../types/auth.types";
 
 export async function resolvePostLoginRoute(user: AuthUser) {

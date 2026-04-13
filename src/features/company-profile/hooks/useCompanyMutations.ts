@@ -17,7 +17,7 @@ import type {
   ContactBody,
   DetailBody,
 } from "../types/company.types";
-import type { AxiosError } from "axios";
+import { getApiErrorMessage } from "@/utils/api-error";
 
 function useInvalidateCompanyProfile() {
   const queryClient = useQueryClient();
@@ -27,26 +27,6 @@ function useInvalidateCompanyProfile() {
       queryKey: ["company-profile"],
     });
   };
-}
-
-function getErrorMessage(error: unknown): string {
-  if (typeof error === "object" && error !== null) {
-    if ("response" in error) {
-      const axiosError = error as AxiosError<{ message?: string }>;
-
-      return (
-        axiosError.response?.data?.message ||
-        axiosError.message ||
-        "Có lỗi xảy ra"
-      );
-    }
-
-    if ("message" in error) {
-      return String((error as { message?: string }).message);
-    }
-  }
-
-  return "Có lỗi xảy ra";
 }
 
 export function useUpdateBasicInfoCompanyMutation() {
@@ -59,7 +39,7 @@ export function useUpdateBasicInfoCompanyMutation() {
       await invalidate();
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error));
+      toast.error(getApiErrorMessage(error));
     },
   });
 }
@@ -75,7 +55,7 @@ export function useUpdateDescriptionCompanyMutation() {
       await invalidate();
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error));
+      toast.error(getApiErrorMessage(error));
     },
   });
 }
@@ -90,7 +70,7 @@ export function useUpdateContactCompanyMutation() {
       await invalidate();
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error));
+      toast.error(getApiErrorMessage(error));
     },
   });
 }
@@ -105,7 +85,7 @@ export function useUpdateDetailCompanyMutation() {
       await invalidate();
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error));
+      toast.error(getApiErrorMessage(error));
     },
   });
 }
@@ -120,7 +100,7 @@ export function useUpdateLogoCompanyMutation() {
       await invalidate();
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error));
+      toast.error(getApiErrorMessage(error));
     },
   });
 }
@@ -135,7 +115,7 @@ export function useUpdateCoverImageCompanyMutation() {
       await invalidate();
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error));
+      toast.error(getApiErrorMessage(error));
     },
   });
 }
@@ -150,7 +130,7 @@ export function useAddOfficeImageMutation() {
       await invalidate();
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error));
+      toast.error(getApiErrorMessage(error));
     },
   });
 }
@@ -165,7 +145,7 @@ export function useDeleteOfficeImageMutation() {
       await invalidate();
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error));
+      toast.error(getApiErrorMessage(error));
     },
   });
 }
@@ -183,7 +163,7 @@ export function useReplaceOfficeImageMutation() {
       await invalidate();
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error));
+      toast.error(getApiErrorMessage(error));
     },
   });
 }

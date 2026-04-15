@@ -1,19 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import CompanyJobPostingsPage from "@/features/job-postings/components/company/CompanyJobPostingsPage";
 import CreateJobPostingModal from "@/features/job-postings/components/company/create-job/CreateJobPostingModal";
 
 export default function RecruiterJobPostingsPage() {
+  const router = useRouter();
   const [openCreateModal, setOpenCreateModal] = useState(false);
 
   return (
     <>
       <CompanyJobPostingsPage
         onCreateJob={() => setOpenCreateModal(true)}
-        onViewJobDetail={(jobId) => {
-          console.log("view detail", jobId);
-        }}
+        onViewJobDetail={(jobId) =>
+          router.push(`/recruiter/jobs-detail/${jobId}`)
+        }
       />
 
       {openCreateModal ? (

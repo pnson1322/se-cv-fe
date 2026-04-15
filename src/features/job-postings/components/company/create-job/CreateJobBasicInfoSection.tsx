@@ -148,13 +148,13 @@ export default function CreateJobBasicInfoSection({
                   />
 
                   <span
-                    className={`grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full border-[2px] transition ${
+                    className={`grid h-4.5 w-4.5 shrink-0 place-items-center rounded-full border-2 transition ${
                       checked ? "border-(--color-accent)" : "border-slate-400"
                     }`}
                   >
                     <span
-                      className={`h-[9px] w-[9px] shrink-0 rounded-full transition ${
-                        checked ? "bg-(--color-accent)" : "bg-slate-700"
+                      className={`h-2.25 w-2.25 shrink-0 rounded-full transition ${
+                        checked ? "bg-(--color-accent)" : "bg-white"
                       }`}
                     />
                   </span>

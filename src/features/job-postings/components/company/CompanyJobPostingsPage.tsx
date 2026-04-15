@@ -23,10 +23,31 @@ export default function CompanyJobPostingsPage({
     cards,
     stats,
     isLoading,
+    error,
   } = useCompanyJobPostingsPage();
 
+  if (error) {
+    return (
+      <div className="mx-12 space-y-6 xl:mx-16">
+        <JobPostingStatsGrid stats={stats} />
+
+        <JobPostingToolbar
+          searchValue={searchInput}
+          statusValue={status}
+          onSearchChange={setSearchInput}
+          onStatusChange={setStatus}
+          onCreate={() => onCreateJob?.()}
+        />
+
+        <div className="rounded-3xl border border-red-200 bg-red-50 px-6 py-10 text-center text-[15px] text-red-600 shadow-sm">
+          Không thể tải danh sách tin tuyển dụng.
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="mx-6 space-y-6 xl:mx-8">
+    <div className="mx-12 space-y-6 xl:mx-16">
       <JobPostingStatsGrid stats={stats} />
 
       <JobPostingToolbar

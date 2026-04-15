@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { BriefcaseBusiness, CalendarDays, MapPin, Wallet } from "lucide-react";
 import type { JobPostingCardAdminCompanyItem } from "../../types/job-postings.types";
 import {
@@ -20,12 +21,14 @@ export default function CompanyJobPostingCard({ item, onViewDetail }: Props) {
     <article className="rounded-3xl border border-(--color-border) bg-white p-5 shadow-sm transition hover:shadow-md">
       <div className="flex h-full flex-col">
         <div className="flex items-start gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-(--color-surface) text-(--color-muted)">
+          <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-(--color-surface) text-(--color-muted)">
             {item.logoUrl ? (
-              <img
+              <Image
                 src={item.logoUrl}
                 alt={item.companyName}
-                className="h-full w-full rounded-2xl object-cover"
+                fill
+                sizes="64px"
+                className="object-cover"
               />
             ) : (
               <BriefcaseBusiness size={30} />

@@ -94,16 +94,27 @@ export async function getJobPostingCardsForCompany(
 ) {
   const { page = 1, limit = 10, search, status, city } = params;
 
+  const queryParams: Record<string, string | number> = {
+    page,
+    limit,
+  };
+
+  if (search?.trim()) {
+    queryParams.search = search.trim();
+  }
+
+  if (status) {
+    queryParams.status = status;
+  }
+
+  if (city?.trim()) {
+    queryParams.city = city.trim();
+  }
+
   const res = await api.get<
     ApiResponse<JobPostingData<JobPostingCardAdminCompanyItem>>
   >("/job-postings/card", {
-    params: {
-      page,
-      limit,
-      search,
-      status,
-      city,
-    },
+    params: queryParams,
   });
 
   return res.data;

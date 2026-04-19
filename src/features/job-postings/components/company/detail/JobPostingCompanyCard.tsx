@@ -1,6 +1,13 @@
 "use client";
 
-import { Building2, Globe, Mail, MapPin, Users } from "lucide-react";
+import {
+  Building2,
+  Globe,
+  Mail,
+  MapPin,
+  Users,
+  BriefcaseBusiness,
+} from "lucide-react";
 
 type Props = {
   companyName: string;
@@ -68,7 +75,7 @@ export default function JobPostingCompanyCard({
         />
 
         <InfoRow
-          icon={<BriefcaseIcon />}
+          icon={<BriefcaseBusiness size={16} />}
           label="Lĩnh vực"
           value={industry || "Chưa cập nhật"}
         />
@@ -95,14 +102,10 @@ export default function JobPostingCompanyCard({
       <button
         type="button"
         onClick={onViewCompanyDetail}
-        className="mt-6 w-full rounded-2xl border-2 border-(--color-primary) bg-white py-3 text-[15px] font-semibold text-(--color-primary) transition hover:bg-slate-50"
+        className="mt-6 w-full rounded-2xl border border-(--color-primary) bg-white py-3 text-[15px] font-semibold text-(--color-primary) transition hover:bg-slate-50"
       >
         Xem chi tiết công ty
       </button>
     </div>
   );
-}
-
-function BriefcaseIcon() {
-  return <Building2 size={16} />;
 }

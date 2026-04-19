@@ -122,6 +122,7 @@ export type JobPostingDataItem = {
   salaryType: string;
   isSalaryNegotiable: boolean;
   approveAt: string;
+  categoryId: number;
 };
 
 type JobPostingMeta = {

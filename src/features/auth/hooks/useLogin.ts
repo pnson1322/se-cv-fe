@@ -66,7 +66,6 @@ export function useLogin() {
       }
 
       toast.error(message);
-      console.error("Login failed:", error);
     },
   });
 

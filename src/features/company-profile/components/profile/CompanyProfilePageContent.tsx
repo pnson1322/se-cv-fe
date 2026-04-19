@@ -1,16 +1,21 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import CompanyProfilePage from "./CompanyProfilePage";
 import { useCompanyProfile } from "../../hooks/useCompanyProfile";
+import { useCompanyProfileJobs } from "../../hooks/useCompanyProfileJobs";
 import EditBasicInfoModal from "../edit-profile/EditBasicInfoModal";
 import EditDescriptionModal from "../edit-profile/EditDescriptionModal";
 import EditDetailModal from "../edit-profile/EditDetailModal";
 import EditContactModal from "../edit-profile/EditContactModal";
 import EditCoverImageModal from "../edit-profile/EditCoverImageModal";
-import EditLogoModal from "../edit-profile/EditLogoModal";
 import ManageOfficeImagesModal from "../edit-profile/ManageOfficeImagesModal";
+import CompanyProfileLoading from "./CompanyProfileLoading";
+import CompanyProfileError from "./CompanyProfileError";
+import { getCategoriesList } from "@/features/job-postings/api/job-postings.api";
 
 type CompanyProfilePageContentProps = {
   companyId?: string;
@@ -23,41 +28,49 @@ type ModalKey =
   | "detail"
   | "contact"
   | "cover"
-  | "logo"
   | "office-images";
 
 export default function CompanyProfilePageContent({
   companyId,
 }: CompanyProfilePageContentProps) {
-  const { user } = useAuth();
+  const router = useRouter();
+  const { user, isLoading: isAuthLoading } = useAuth();
   const viewerRole = user?.role;
 
   const { data, isLoading, error } = useCompanyProfile({
-    viewerRole: viewerRole!,
+    viewerRole,
     companyId,
   });
 
+  const company = data?.data;
+
+  const jobsQuery = useCompanyProfileJobs({
+    companyId: company?.companyId,
+    enabled: !!company?.companyId,
+  });
+
+  const categoriesQuery = useQuery({
+    queryKey: ["job-postings", "categories"],
+    queryFn: getCategoriesList,
+  });
+
+  const jobs = jobsQuery.data?.data?.data ?? [];
+  const categories = categoriesQuery.data?.data ?? [];
+
   const [activeModal, setActiveModal] = useState<ModalKey>(null);
 
-  if (!viewerRole) return null;
+  if (isAuthLoading || !viewerRole) {
+    return <CompanyProfileLoading />;
+  }
 
   if (isLoading) {
-    return (
-      <div className="rounded-3xl border border-slate-200 bg-white px-8 py-12 text-center text-[1rem] font-medium text-slate-500">
-        Đang tải hồ sơ công ty...
-      </div>
-    );
+    return <CompanyProfileLoading />;
   }
 
-  if (error || !data?.data) {
-    return (
-      <div className="rounded-3xl border border-red-200 bg-red-50 px-8 py-12 text-center text-[1rem] font-medium text-red-600">
-        Không thể tải hồ sơ công ty.
-      </div>
-    );
+  if (error || !company) {
+    return <CompanyProfileError />;
   }
 
-  const company = data.data;
   const closeModal = () => setActiveModal(null);
 
   return (
@@ -65,16 +78,19 @@ export default function CompanyProfilePageContent({
       <CompanyProfilePage
         company={company}
         viewerRole={viewerRole}
+        jobs={jobs}
+        categories={categories}
+        isJobsLoading={jobsQuery.isLoading || categoriesQuery.isLoading}
         isOwner={viewerRole === "COMPANY" && !companyId}
+        onViewJobDetail={(jobId) => router.push(`/jobs-detail/${jobId}`)}
         onEditBasicInfo={() => setActiveModal("basic-info")}
         onEditDescription={() => setActiveModal("description")}
         onEditDetail={() => setActiveModal("detail")}
         onEditContact={() => setActiveModal("contact")}
         onManageOfficeImages={() => setActiveModal("office-images")}
-        onChangeLogo={() => setActiveModal("logo")}
         onChangeCoverImage={() => setActiveModal("cover")}
-        onFollow={() => console.log("follow company")}
-        onRestrict={() => console.log("restrict company")}
+        onFollow={() => undefined}
+        onRestrict={() => undefined}
       />
 
       {activeModal === "basic-info" && (
@@ -95,10 +111,6 @@ export default function CompanyProfilePageContent({
 
       {activeModal === "cover" && (
         <EditCoverImageModal open onClose={closeModal} />
-      )}
-
-      {activeModal === "logo" && (
-        <EditLogoModal open company={company} onClose={closeModal} />
       )}
 
       {activeModal === "office-images" && (

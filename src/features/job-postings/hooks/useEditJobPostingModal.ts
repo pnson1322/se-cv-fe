@@ -210,8 +210,6 @@ export function useEditJobPostingModal({ job, onClose }: Params) {
     const payload: PutBody = parsed.data;
 
     try {
-      console.log("jobId before update:", job.jobId);
-      console.log("payload before update:", payload);
       await updateMutation.mutateAsync(payload);
       onClose();
     } catch {}

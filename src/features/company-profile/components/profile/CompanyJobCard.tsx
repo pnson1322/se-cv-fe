@@ -1,66 +1,90 @@
 "use client";
 
 import { Clock3, MapPin, Wallet } from "lucide-react";
+import { toast } from "sonner";
 import type { Role } from "@/features/auth/constants/roles";
-import type { MockJob } from "./CompanyProfilePage";
+import type { JobPostingDataItem } from "@/features/job-postings/types/job-postings.types";
+
+type Props = {
+  job: JobPostingDataItem;
+  viewerRole: Role;
+  onViewDetail: (jobId: number) => void;
+};
 
 export default function CompanyJobCard({
   job,
   viewerRole,
-}: {
-  job: MockJob;
-  viewerRole: Role;
-}) {
-  const canApply = viewerRole === "STUDENT";
+  onViewDetail,
+}: Props) {
+  const isStudent = viewerRole === "STUDENT";
+
+  const salaryText =
+    job.isSalaryNegotiable || job.salaryType === "NEGOTIABLE"
+      ? "Thỏa thuận"
+      : `${formatMoney(job.salaryMin)} - ${formatMoney(job.salaryMax)}`;
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white px-6 py-5 shadow-sm transition hover:border-slate-300 hover:shadow-md">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0 flex-1">
           <h3 className="truncate text-[16.5px] font-semibold text-slate-900 md:text-[17.5px]">
-            {job.title}
+            {job.jobTitle}
           </h3>
 
           <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-2 text-[14px] leading-6 text-slate-500">
             <span className="inline-flex items-center gap-1.5">
               <MapPin size={14} className="text-slate-400" />
-              {job.location}
+              {job.city}
             </span>
 
             <span className="inline-flex items-center gap-1.5">
               <Wallet size={14} className="text-slate-400" />
-              {job.salary}
-            </span>
-
-            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[12px] font-semibold text-slate-700">
-              {job.type}
+              {salaryText}
             </span>
 
             <span className="inline-flex items-center gap-1.5">
               <Clock3 size={14} className="text-slate-400" />
-              {job.postedAt}
+              {formatDate(job.approveAt)}
             </span>
           </div>
         </div>
 
         <div className="flex shrink-0 items-center gap-2.5">
-          <button
-            type="button"
-            className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-[14px] font-semibold text-slate-700 transition hover:bg-slate-50"
-          >
-            Xem chi tiết
-          </button>
-
-          {canApply && (
+          {isStudent ? (
             <button
               type="button"
-              className="rounded-lg bg-cyan-500 px-4 py-2 text-[14px] font-semibold text-white transition hover:bg-cyan-600"
+              onClick={() => toast.info("Chưa có API ứng tuyển")}
+              className="rounded-lg border border-(--color-accent) bg-cyan-50 px-4 py-2 text-[14px] font-semibold text-(--color-accent) shadow-sm transition hover:bg-(--color-accent) hover:text-white hover:shadow-md"
             >
               Ứng tuyển
             </button>
-          )}
+          ) : null}
+
+          <button
+            type="button"
+            onClick={() => onViewDetail(job.jobId)}
+            className="rounded-lg bg-(--color-accent) px-4 py-2 text-[14px] font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:brightness-95 hover:shadow-md"
+          >
+            Xem chi tiết
+          </button>
         </div>
       </div>
     </div>
   );
+}
+
+function formatMoney(value: number) {
+  return `${new Intl.NumberFormat("vi-VN").format(value)} VNĐ`;
+}
+
+function formatDate(value: string) {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("vi-VN", {
+    dateStyle: "short",
+  }).format(date);
 }

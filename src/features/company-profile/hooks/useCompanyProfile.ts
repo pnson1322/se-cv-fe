@@ -5,7 +5,7 @@ import { getCompanyById, getMyCompany } from "../api/company.api";
 import type { Role } from "@/features/auth/constants/roles";
 
 type UseCompanyProfileParams = {
-  viewerRole: Role;
+  viewerRole?: Role;
   companyId?: string;
 };
 
@@ -14,10 +14,18 @@ export function useCompanyProfile({
   companyId,
 }: UseCompanyProfileParams) {
   const isOwnerView = viewerRole === "COMPANY" && !companyId;
+  const canFetch =
+    !!viewerRole &&
+    (isOwnerView || (!!companyId && companyId.trim().length > 0));
 
   return useQuery({
-    queryKey: ["company-profile", viewerRole, companyId || "me"],
+    queryKey: ["company-profile", viewerRole ?? "unknown", companyId || "me"],
+    enabled: canFetch,
     queryFn: async () => {
+      if (!viewerRole) {
+        throw new Error("viewerRole is required");
+      }
+
       if (isOwnerView) {
         return getMyCompany();
       }

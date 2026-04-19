@@ -9,29 +9,27 @@ import CompanyProfileTabs, { type ProfileTab } from "./CompanyProfileTabs";
 import CompanyAboutSection from "./CompanyAboutSection";
 import CompanyJobsSection from "./CompanyJobsSection";
 import CompanyReviewsSection from "./CompanyReviewsSection";
+import type {
+  CategoryItem,
+  JobPostingDataItem,
+} from "@/features/job-postings/types/job-postings.types";
 
 type CompanyProfilePageProps = {
   company: CompanyProfile;
   viewerRole: Role;
+  jobs: JobPostingDataItem[];
+  categories: CategoryItem[];
+  isJobsLoading?: boolean;
   isOwner?: boolean;
+  onViewJobDetail: (jobId: number) => void;
   onEditBasicInfo?: () => void;
   onEditDescription?: () => void;
   onEditDetail?: () => void;
   onEditContact?: () => void;
   onManageOfficeImages?: () => void;
-  onChangeLogo?: () => void;
   onChangeCoverImage?: () => void;
   onFollow?: () => void;
   onRestrict?: () => void;
-};
-
-export type MockJob = {
-  id: number;
-  title: string;
-  location: string;
-  salary: string;
-  type: string;
-  postedAt: string;
 };
 
 export type MockReview = {
@@ -42,33 +40,6 @@ export type MockReview = {
   content: string;
   createdAt: string;
 };
-
-const mockJobs: MockJob[] = [
-  {
-    id: 1,
-    title: "Thực tập sinh Lập trình Web",
-    location: "Hà Nội",
-    salary: "5-7 triệu VNĐ",
-    type: "Fulltime",
-    postedAt: "2 ngày trước",
-  },
-  {
-    id: 2,
-    title: "Junior Frontend Developer",
-    location: "Hà Nội",
-    salary: "8-12 triệu VNĐ",
-    type: "Fulltime",
-    postedAt: "1 tuần trước",
-  },
-  {
-    id: 3,
-    title: "Backend Developer (NodeJS)",
-    location: "Hà Nội",
-    salary: "10-15 triệu VNĐ",
-    type: "Fulltime",
-    postedAt: "3 ngày trước",
-  },
-];
 
 const mockReviews: MockReview[] = [
   {
@@ -103,13 +74,16 @@ const mockReviews: MockReview[] = [
 export default function CompanyProfilePage({
   company,
   viewerRole,
+  jobs,
+  categories,
+  isJobsLoading = false,
   isOwner = false,
+  onViewJobDetail,
   onEditBasicInfo,
   onEditDescription,
   onEditDetail,
   onEditContact,
   onManageOfficeImages,
-  onChangeLogo,
   onChangeCoverImage,
   onFollow,
   onRestrict,
@@ -130,13 +104,12 @@ export default function CompanyProfilePage({
         viewerRole={viewerRole}
         isOwner={isOwner}
         onEditBasicInfo={onEditBasicInfo}
-        onChangeLogo={onChangeLogo}
         onChangeCoverImage={onChangeCoverImage}
         onFollow={onFollow}
         onRestrict={onRestrict}
       />
 
-      <CompanyProfileStats company={company} totalJobs={mockJobs.length} />
+      <CompanyProfileStats company={company} totalJobs={jobs.length} />
 
       <CompanyProfileTabs
         tabs={tabs}
@@ -157,7 +130,13 @@ export default function CompanyProfilePage({
       )}
 
       {activeTab === "jobs" && (
-        <CompanyJobsSection jobs={mockJobs} viewerRole={viewerRole} />
+        <CompanyJobsSection
+          jobs={jobs}
+          categories={categories}
+          viewerRole={viewerRole}
+          isLoading={isJobsLoading}
+          onViewJobDetail={onViewJobDetail}
+        />
       )}
 
       {activeTab === "reviews" && !isStudent && (

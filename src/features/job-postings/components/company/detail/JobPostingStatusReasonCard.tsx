@@ -1,0 +1,64 @@
+"use client";
+
+import { Ban, CircleX } from "lucide-react";
+
+type Props = {
+  type: "rejected" | "restricted";
+  date: string;
+  reason: string;
+};
+
+export default function JobPostingStatusReasonCard({
+  type,
+  date,
+  reason,
+}: Props) {
+  const isRejected = type === "rejected";
+
+  return (
+    <section
+      className={`rounded-3xl border p-6 ${
+        isRejected
+          ? "border-red-200 bg-red-50"
+          : "border-orange-200 bg-orange-50"
+      }`}
+    >
+      <div
+        className={`flex items-center gap-3 ${
+          isRejected ? "text-red-700" : "text-orange-700"
+        }`}
+      >
+        {isRejected ? <CircleX size={28} /> : <Ban size={28} />}
+        <h3 className="text-[18px] font-bold">
+          {isRejected ? "Tin đã bị từ chối" : "Tin đang bị hạn chế"}
+        </h3>
+      </div>
+
+      <p
+        className={`mt-3 text-[15px] ${
+          isRejected ? "text-red-600" : "text-orange-600"
+        }`}
+      >
+        {isRejected ? "Ngày từ chối" : "Ngày hạn chế"}: {date}
+      </p>
+
+      <div className="mt-4 rounded-2xl border border-current/15 bg-white/70 p-5">
+        <p
+          className={`text-[15px] font-semibold ${
+            isRejected ? "text-red-700" : "text-orange-700"
+          }`}
+        >
+          {isRejected ? "Lý do từ chối:" : "Lý do hạn chế:"}
+        </p>
+
+        <p
+          className={`mt-3 whitespace-pre-line text-[15px] leading-8 ${
+            isRejected ? "text-red-600" : "text-orange-600"
+          }`}
+        >
+          {reason}
+        </p>
+      </div>
+    </section>
+  );
+}

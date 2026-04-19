@@ -13,9 +13,7 @@ export default function RecruiterJobPostingsPage() {
     <>
       <CompanyJobPostingsPage
         onCreateJob={() => setOpenCreateModal(true)}
-        onViewJobDetail={(jobId) =>
-          router.push(`/recruiter/jobs-detail/${jobId}`)
-        }
+        onViewJobDetail={(jobId) => router.push(`/jobs-detail/${jobId}`)}
       />
 
       {openCreateModal ? (

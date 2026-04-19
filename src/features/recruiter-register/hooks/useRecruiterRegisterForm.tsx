@@ -52,7 +52,6 @@ export function useRecruiterRegisterForm() {
         "Đăng ký công ty thất bại, vui lòng thử lại";
 
       toast.error(message);
-      console.error("Create company failed:", error);
     },
   });
 

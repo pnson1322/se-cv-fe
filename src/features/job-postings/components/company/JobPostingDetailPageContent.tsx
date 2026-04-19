@@ -5,11 +5,17 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useCompanyProfile } from "@/features/company-profile/hooks/useCompanyProfile";
 import { useJobPostingDetail } from "../../hooks/useJobPostingDetail";
+import { usePatchJobPostingMutation } from "../../hooks/usePatchJobPostingMutation";
+import { useJobPostingDetailActions } from "../../hooks/useJobPostingDetailActions";
 import EditJobPostingModal from "./edit/EditJobPostingModal";
 import JobPostingBackBar from "./detail/JobPostingBackBar";
 import JobPostingDetailHeader from "./detail/JobPostingDetailHeader";
 import JobPostingDetailSection from "./detail/JobPostingDetailSection";
 import JobPostingSidebar from "./detail/JobPostingSideBar";
+import SimilarJobsSection from "./detail/SimilarJobsSection";
+import JobPostingModerationModal from "./detail/JobPostingModerationModal";
+import JobPostingDetailLoading from "./detail/JobPostingDetailLoading";
+import JobPostingDetailError from "./detail/JobPostingDetailError";
 import {
   formatRelativeDate,
   formatSalary,
@@ -20,39 +26,74 @@ type Props = {
   jobId: number;
 };
 
+type ModerationMode = "reject" | "restrict" | null;
+
+function getDeadlineState(applicationDeadline?: string) {
+  if (!applicationDeadline) {
+    return { isExpired: false, isExpiringSoon: false };
+  }
+
+  const deadline = new Date(applicationDeadline).getTime();
+
+  if (Number.isNaN(deadline)) {
+    return { isExpired: false, isExpiringSoon: false };
+  }
+
+  const now = Date.now();
+  const diff = deadline - now;
+  const threeDays = 3 * 24 * 60 * 60 * 1000;
+
+  return {
+    isExpired: diff < 0,
+    isExpiringSoon: diff >= 0 && diff <= threeDays,
+  };
+}
+
 export default function JobPostingDetailPageContent({ jobId }: Props) {
   const router = useRouter();
   const { user } = useAuth();
   const viewerRole = user?.role;
+
   const [openEdit, setOpenEdit] = useState(false);
+  const [moderationMode, setModerationMode] = useState<ModerationMode>(null);
 
   const jobDetailQuery = useJobPostingDetail(jobId);
   const job = jobDetailQuery.data?.data;
 
   const companyProfileQuery = useCompanyProfile({
-    viewerRole: viewerRole!,
+    viewerRole,
+    companyId:
+      viewerRole === "COMPANY"
+        ? undefined
+        : job
+          ? String(job.companyId)
+          : undefined,
+  });
+
+  const patchMutation = usePatchJobPostingMutation(jobId);
+
+  const actions = useJobPostingDetailActions({
+    viewerRole,
+    job,
+    router,
+    patchMutation,
+    setModerationMode,
+    setOpenEdit,
   });
 
   if (!viewerRole) return null;
 
   if (jobDetailQuery.isLoading) {
-    return (
-      <div className="mx-24 mt-5 rounded-3xl border border-(--color-border) bg-white px-8 py-12 text-center text-[15px] text-(--color-muted)">
-        Đang tải chi tiết công việc...
-      </div>
-    );
+    return <JobPostingDetailLoading />;
   }
 
   if (jobDetailQuery.error || !job) {
-    return (
-      <div className="mx-24 mt-5 rounded-3xl border border-red-200 bg-red-50 px-8 py-12 text-center text-[15px] text-red-600">
-        Không thể tải chi tiết công việc.
-      </div>
-    );
+    return <JobPostingDetailError isStudent={viewerRole === "STUDENT"} />;
   }
 
   const company = companyProfileQuery.data?.data;
   const statusMeta = getJobPostingStatusMeta(job.status);
+  const deadlineState = getDeadlineState(job.applicationDeadline);
 
   return (
     <>
@@ -62,6 +103,8 @@ export default function JobPostingDetailPageContent({ jobId }: Props) {
         <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_390px]">
           <div className="min-w-0 space-y-6">
             <JobPostingDetailHeader
+              viewerRole={viewerRole}
+              status={job.status}
               jobTitle={job.jobTitle}
               companyName={company?.companyName || "Chưa cập nhật"}
               companyLogoUrl={company?.logoUrl || job.logoUrl || null}
@@ -76,10 +119,21 @@ export default function JobPostingDetailPageContent({ jobId }: Props) {
               deadlineText={new Date(
                 job.applicationDeadline,
               ).toLocaleDateString("vi-VN")}
+              isExpired={deadlineState.isExpired}
+              isExpiringSoon={deadlineState.isExpiringSoon}
               applicantCount={job.applicantCount}
               statusLabel={statusMeta.label}
               statusClassName={statusMeta.className}
-              onEdit={() => setOpenEdit(true)}
+              isLoading={patchMutation.isPending}
+              onEdit={actions.handleEdit}
+              onHide={actions.handleHide}
+              onViewApplicants={actions.handleViewApplicants}
+              onApply={actions.handleApply}
+              onSave={actions.handleSave}
+              onApprove={actions.handleApprove}
+              onReject={actions.handleReject}
+              onRestrict={actions.handleRestrict}
+              onReapprove={actions.handleReapprove}
             />
 
             <JobPostingDetailSection
@@ -101,9 +155,13 @@ export default function JobPostingDetailPageContent({ jobId }: Props) {
               tone="green"
               listMode
             />
+
+            {viewerRole === "STUDENT" ? <SimilarJobsSection /> : null}
           </div>
 
           <JobPostingSidebar
+            viewerRole={viewerRole}
+            status={job.status}
             companyName={company?.companyName || "Chưa cập nhật"}
             companySize={company?.companySize}
             industry={company?.industry}
@@ -111,7 +169,7 @@ export default function JobPostingDetailPageContent({ jobId }: Props) {
             website={company?.website}
             contactEmail={company?.contactEmail}
             fallbackCity={job.city}
-            onViewCompanyDetail={() => router.push("/recruiter/profile")}
+            onViewCompanyDetail={actions.handleViewCompanyDetail}
           />
         </div>
       </div>
@@ -122,6 +180,41 @@ export default function JobPostingDetailPageContent({ jobId }: Props) {
           open
           job={job}
           onClose={() => setOpenEdit(false)}
+        />
+      ) : null}
+
+      {moderationMode ? (
+        <JobPostingModerationModal
+          open
+          mode={moderationMode}
+          onClose={() => setModerationMode(null)}
+          onConfirm={(reason) => {
+            if (moderationMode === "reject") {
+              patchMutation.mutate(
+                {
+                  payload: { status: "rejected", admin_note: reason },
+                  action: "reject",
+                },
+                {
+                  onSuccess: () => setModerationMode(null),
+                },
+              );
+              return;
+            }
+
+            if (moderationMode === "restrict") {
+              patchMutation.mutate(
+                {
+                  payload: { status: "restricted", admin_note: reason },
+                  action: "restrict",
+                },
+                {
+                  onSuccess: () => setModerationMode(null),
+                },
+              );
+            }
+          }}
+          isLoading={patchMutation.isPending}
         />
       ) : null}
     </>

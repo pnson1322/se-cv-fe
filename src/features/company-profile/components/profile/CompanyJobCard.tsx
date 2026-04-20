@@ -4,6 +4,7 @@ import { Clock3, MapPin, Wallet } from "lucide-react";
 import { toast } from "sonner";
 import type { Role } from "@/features/auth/constants/roles";
 import type { JobPostingDataItem } from "@/features/job-postings/types/job-postings.types";
+import { getJobPostingStatusMeta } from "@/features/job-postings/utils/job-postings.utils";
 
 type Props = {
   job: JobPostingDataItem;
@@ -17,6 +18,7 @@ export default function CompanyJobCard({
   onViewDetail,
 }: Props) {
   const isStudent = viewerRole === "STUDENT";
+  const statusMeta = getJobPostingStatusMeta(job.status);
 
   const salaryText =
     job.isSalaryNegotiable || job.salaryType === "NEGOTIABLE"
@@ -27,9 +29,19 @@ export default function CompanyJobCard({
     <div className="rounded-xl border border-slate-200 bg-white px-6 py-5 shadow-sm transition hover:border-slate-300 hover:shadow-md">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-[16.5px] font-semibold text-slate-900 md:text-[17.5px]">
-            {job.jobTitle}
-          </h3>
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="truncate text-[16.5px] font-semibold text-slate-900 md:text-[17.5px]">
+              {job.jobTitle}
+            </h3>
+
+            {!isStudent ? (
+              <span
+                className={`inline-flex rounded-full px-2.5 py-1 text-[12px] font-semibold ${statusMeta.className}`}
+              >
+                {statusMeta.label}
+              </span>
+            ) : null}
+          </div>
 
           <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-2 text-[14px] leading-6 text-slate-500">
             <span className="inline-flex items-center gap-1.5">

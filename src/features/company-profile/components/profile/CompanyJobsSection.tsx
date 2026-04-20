@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ChevronDown, Loader2 } from "lucide-react";
+import { Loader2, RotateCcw } from "lucide-react";
+import CustomSelect from "@/components/CustomSelect";
 import type { Role } from "@/features/auth/constants/roles";
 import type {
   CategoryItem,
@@ -24,6 +25,9 @@ type SalaryFilterValue =
   | "10m-20m"
   | "above-20m";
 
+const DEFAULT_CATEGORY_FILTER = "all";
+const DEFAULT_SALARY_FILTER: SalaryFilterValue = "all";
+
 const salaryFilterOptions: Array<{
   label: string;
   value: SalaryFilterValue;
@@ -42,17 +46,41 @@ export default function CompanyJobsSection({
   isLoading = false,
   onViewJobDetail,
 }: Props) {
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
-  const [salaryFilter, setSalaryFilter] = useState<SalaryFilterValue>("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>(
+    DEFAULT_CATEGORY_FILTER,
+  );
+  const [salaryFilter, setSalaryFilter] = useState<SalaryFilterValue>(
+    DEFAULT_SALARY_FILTER,
+  );
+
+  const hasActiveFilters =
+    categoryFilter !== DEFAULT_CATEGORY_FILTER ||
+    salaryFilter !== DEFAULT_SALARY_FILTER;
+
+  const categoryOptions = useMemo(
+    () => [
+      { label: "Tất cả ngành nghề", value: DEFAULT_CATEGORY_FILTER },
+      ...categories.map((category) => ({
+        label: category.categoryName,
+        value: String(category.categoryId),
+      })),
+    ],
+    [categories],
+  );
 
   const filteredJobs = useMemo(() => {
     return jobs.filter((job) => {
+      if (viewerRole === "STUDENT" && job.status !== "approved") {
+        return false;
+      }
+
       const matchCategory =
-        categoryFilter === "all" || String(job.categoryId) === categoryFilter;
+        categoryFilter === DEFAULT_CATEGORY_FILTER ||
+        String(job.categoryId) === categoryFilter;
 
       let matchSalary = true;
 
-      if (salaryFilter !== "all") {
+      if (salaryFilter !== DEFAULT_SALARY_FILTER) {
         if (salaryFilter === "negotiable") {
           matchSalary =
             job.isSalaryNegotiable || job.salaryType === "NEGOTIABLE";
@@ -79,55 +107,52 @@ export default function CompanyJobsSection({
 
       return matchCategory && matchSalary;
     });
-  }, [jobs, categoryFilter, salaryFilter]);
+  }, [jobs, categoryFilter, salaryFilter, viewerRole]);
+
+  const handleResetFilters = () => {
+    setCategoryFilter(DEFAULT_CATEGORY_FILTER);
+    setSalaryFilter(DEFAULT_SALARY_FILTER);
+  };
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
-      <div className="grid gap-3 md:grid-cols-2">
-        <div className="relative">
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="h-12 w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 pr-10 text-[14px] font-semibold text-slate-600 outline-none transition hover:border-slate-300 focus:border-(--color-accent)"
-          >
-            <option value="all">Tất cả ngành nghề</option>
-            {categories.map((category) => (
-              <option
-                key={category.categoryId}
-                value={String(category.categoryId)}
-              >
-                {category.categoryName}
-              </option>
-            ))}
-          </select>
+      <div className="grid gap-3 lg:grid-cols-[1fr_1fr_auto]">
+        <CustomSelect
+          label=""
+          placeholder="Tất cả ngành nghề"
+          value={categoryFilter}
+          options={categoryOptions}
+          onChange={setCategoryFilter}
+        />
 
-          <ChevronDown
-            size={16}
-            className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
-          />
-        </div>
+        <CustomSelect
+          label=""
+          placeholder="Tất cả mức lương"
+          value={salaryFilter}
+          options={salaryFilterOptions}
+          onChange={(value) => setSalaryFilter(value as SalaryFilterValue)}
+        />
 
-        <div className="relative">
-          <select
-            value={salaryFilter}
-            onChange={(e) =>
-              setSalaryFilter(e.target.value as SalaryFilterValue)
-            }
-            className="h-12 w-full appearance-none rounded-xl border border-slate-200 bg-white px-4 pr-10 text-[14px] font-semibold text-slate-600 outline-none transition hover:border-slate-300 focus:border-(--color-accent)"
-          >
-            {salaryFilterOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-
-          <ChevronDown
-            size={16}
-            className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
-          />
-        </div>
+        <button
+          type="button"
+          onClick={handleResetFilters}
+          disabled={!hasActiveFilters}
+          className={`inline-flex h-12 items-center justify-center gap-2 rounded-2xl px-5 text-[14.5px] font-semibold transition ${
+            hasActiveFilters
+              ? "border border-(--color-accent) text-(--color-accent) bg-cyan-50 hover:bg-(--color-accent) hover:text-white"
+              : "cursor-not-allowed border border-(--color-border) bg-slate-100 text-slate-400"
+          }`}
+        >
+          <RotateCcw size={15} />
+          Đặt lại
+        </button>
       </div>
+
+      {!isLoading ? (
+        <div className="mt-3 text-[13px] text-slate-500">
+          Hiển thị {filteredJobs.length} / {jobs.length} tin tuyển dụng
+        </div>
+      ) : null}
 
       {isLoading ? (
         <div className="mt-4 flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-6 py-10">

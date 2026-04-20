@@ -37,13 +37,13 @@ export default function CompanyProfileHeader({
 
   return (
     <div className="space-y-4">
-      {isOwner && (
+      {isOwner ? (
         <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-[14px] text-slate-700">
           <span className="font-semibold">💡 Xem trước hồ sơ:</span> Đây là cách
           sinh viên nhìn thấy hồ sơ công ty của bạn. Sử dụng các nút chỉnh sửa
           để cập nhật thông tin.
         </div>
-      )}
+      ) : null}
 
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="group relative h-60 w-full overflow-hidden md:h-80">
@@ -54,9 +54,10 @@ export default function CompanyProfileHeader({
             priority
             className="object-cover"
           />
+
           <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(31,58,147,0.65)_0%,rgba(30,64,175,0.3)_50%,rgba(6,182,212,0.25)_100%)]" />
 
-          {isOwner && (
+          {isOwner ? (
             <button
               type="button"
               onClick={onChangeCoverImage}
@@ -65,7 +66,7 @@ export default function CompanyProfileHeader({
               <Camera size={14} />
               Đổi ảnh bìa
             </button>
-          )}
+          ) : null}
         </div>
 
         <div className="relative px-5 pb-6 md:px-6">
@@ -78,7 +79,7 @@ export default function CompanyProfileHeader({
                 className="object-cover"
               />
 
-              {isOwner && (
+              {isOwner ? (
                 <button
                   type="button"
                   onClick={onChangeLogo}
@@ -88,52 +89,58 @@ export default function CompanyProfileHeader({
                     <Camera size={20} />
                   </div>
                 </button>
-              )}
+              ) : null}
             </div>
 
-            <div className="max-w-2xl">
-              <h1 className="text-[28px] font-bold text-slate-900 md:text-[32px]">
-                {companyName}
-              </h1>
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between pb-2">
+              <div className="w-full">
+                <div className="flex w-full items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <h1 className="wrap-break-word text-[28px] font-bold text-slate-900 md:text-[32px]">
+                      {companyName}
+                    </h1>
 
-              <p className="mt-2 text-[15px] text-slate-500">{slogan}</p>
+                    <p className="mt-2 text-[15px] text-slate-500">{slogan}</p>
+                  </div>
 
-              {isOwner && (
-                <button
-                  type="button"
-                  onClick={onEditBasicInfo}
-                  className="mt-4 inline-flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-[14px] font-medium text-slate-700 transition hover:bg-slate-50"
-                >
-                  <Pencil size={16} />
-                  Chỉnh sửa tên & slogan
-                </button>
-              )}
-            </div>
+                  {(isStudent || isAdmin) && (
+                    <div className="shrink-0">
+                      {isStudent && (
+                        <button
+                          type="button"
+                          onClick={onFollow}
+                          className="inline-flex h-11 items-center justify-center rounded-xl bg-cyan-500 px-5 text-[14px] font-semibold text-white transition hover:bg-cyan-600"
+                        >
+                          Theo dõi
+                        </button>
+                      )}
 
-            {(isStudent || isAdmin) && (
-              <div className="mt-4 flex items-center gap-3">
-                {isStudent && (
+                      {isAdmin && (
+                        <button
+                          type="button"
+                          onClick={onRestrict}
+                          className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-red-500 px-5 text-[14px] font-semibold text-white transition hover:bg-red-600"
+                        >
+                          <ShieldAlert size={16} />
+                          Hạn chế
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {isOwner ? (
                   <button
                     type="button"
-                    onClick={onFollow}
-                    className="rounded-lg bg-cyan-500 px-4 py-2 text-[14px] font-semibold text-white transition hover:bg-cyan-600"
+                    onClick={onEditBasicInfo}
+                    className="mt-4 inline-flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-[14px] font-medium text-slate-700 transition hover:bg-slate-50"
                   >
-                    Theo dõi
+                    <Pencil size={16} />
+                    Chỉnh sửa tên & slogan
                   </button>
-                )}
-
-                {isAdmin && (
-                  <button
-                    type="button"
-                    onClick={onRestrict}
-                    className="inline-flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-[14px] font-semibold text-white transition hover:bg-red-600"
-                  >
-                    <ShieldAlert size={16} />
-                    Hạn chế
-                  </button>
-                )}
+                ) : null}
               </div>
-            )}
+            </div>
           </div>
         </div>
       </section>

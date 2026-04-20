@@ -123,6 +123,7 @@ export type JobPostingDataItem = {
   isSalaryNegotiable: boolean;
   approveAt: string;
   categoryId: number;
+  status: JobPostingStatus;
 };
 
 type JobPostingMeta = {

@@ -8,6 +8,7 @@ import JobPostingStatusReasonCard from "./JobPostingStatusReasonCard";
 type Props = {
   viewerRole: Role;
   status: JobPostingStatus;
+  adminNote?: string | null;
   companyName: string;
   companySize?: string | null;
   industry?: string | null;
@@ -21,6 +22,7 @@ type Props = {
 export default function JobPostingSidebar({
   viewerRole,
   status,
+  adminNote,
   companyName,
   companySize,
   industry,
@@ -30,20 +32,16 @@ export default function JobPostingSidebar({
   fallbackCity,
   onViewCompanyDetail,
 }: Props) {
+  const shouldShowReasonCard =
+    viewerRole !== "STUDENT" &&
+    (status === "rejected" || status === "restricted") &&
+    !!adminNote?.trim();
+
   return (
     <aside className="xl:sticky xl:top-32 xl:self-start">
       <div className="space-y-4">
-        {(status === "rejected" || status === "restricted") &&
-        viewerRole !== "STUDENT" ? (
-          <JobPostingStatusReasonCard
-            type={status}
-            date={status === "rejected" ? "27/01/2025" : "25/01/2025"}
-            reason={
-              status === "rejected"
-                ? "Yêu cầu công việc vi phạm quy định đăng tin. Mức lương không phù hợp."
-                : "Nội dung mô tả còn thiếu chi tiết, cần bổ sung rõ ràng hơn."
-            }
-          />
+        {shouldShowReasonCard ? (
+          <JobPostingStatusReasonCard type={status} reason={adminNote} />
         ) : null}
 
         <JobPostingCompanyCard

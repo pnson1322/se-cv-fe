@@ -123,14 +123,31 @@ export function useEditJobPostingModal({ job, onClose }: Params) {
     field: K,
     value: CreateJobPostingFormValues[K],
   ) {
-    setValues((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setValues((prev) => {
+      if (field === "salaryMode" && value === "NEGOTIABLE") {
+        return {
+          ...prev,
+          salaryMode: value,
+          salaryMin: "",
+          salaryMax: "",
+        };
+      }
+
+      return {
+        ...prev,
+        [field]: value,
+      };
+    });
 
     setErrors((prev) => ({
       ...prev,
       [field]: undefined,
+      ...(field === "salaryMode"
+        ? {
+            salaryMin: undefined,
+            salaryMax: undefined,
+          }
+        : {}),
     }));
   }
 
@@ -207,7 +224,14 @@ export function useEditJobPostingModal({ job, onClose }: Params) {
       return;
     }
 
-    const payload: PutBody = parsed.data;
+    const payload: PutBody = {
+      ...parsed.data,
+      salaryMin: parsed.data.isSalaryNegotiable ? null : parsed.data.salaryMin,
+      salaryMax: parsed.data.isSalaryNegotiable ? null : parsed.data.salaryMax,
+      salaryType: parsed.data.isSalaryNegotiable ? "NEGOTIABLE" : "RANGE",
+    };
+
+    console.log(payload);
 
     try {
       await updateMutation.mutateAsync(payload);

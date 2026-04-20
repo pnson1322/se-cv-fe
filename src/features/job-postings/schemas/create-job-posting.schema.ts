@@ -99,8 +99,8 @@ export const createJobPostingSchema = z
       categoryId: Number(values.categoryId),
       city: values.city.trim(),
       applicationDeadline: new Date(values.applicationDeadline).toISOString(),
-      salaryMin: isNegotiable ? 0 : Number(values.salaryMin),
-      salaryMax: isNegotiable ? 0 : Number(values.salaryMax),
+      salaryMin: isNegotiable ? null : Number(values.salaryMin),
+      salaryMax: isNegotiable ? null : Number(values.salaryMax),
       salaryType: values.salaryMode,
       isSalaryNegotiable: isNegotiable,
       numberOfPositions: Number(values.numberOfPositions),
@@ -116,7 +116,6 @@ export const createJobPostingSchema = z
 
 export type CreateJobPostingFormValues = z.input<typeof createJobPostingSchema>;
 export type CreateJobPostingPayload = z.output<typeof createJobPostingSchema>;
-
 export type CreateJobPostingFieldErrors = Partial<
   Record<keyof CreateJobPostingFormValues, string>
 >;

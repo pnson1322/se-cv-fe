@@ -6,6 +6,7 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useCompanyProfile } from "@/features/company-profile/hooks/useCompanyProfile";
 import { useJobPostingDetail } from "../../hooks/useJobPostingDetail";
 import { usePatchJobPostingMutation } from "../../hooks/usePatchJobPostingMutation";
+import { useToggleJobPostingActiveMutation } from "../../hooks/useToggleJobPostingActiveMutation";
 import { useJobPostingDetailActions } from "../../hooks/useJobPostingDetailActions";
 import EditJobPostingModal from "./edit/EditJobPostingModal";
 import JobPostingBackBar from "./detail/JobPostingBackBar";
@@ -20,6 +21,7 @@ import {
   formatRelativeDate,
   formatSalary,
   getJobPostingStatusMeta,
+  getJobPostingTagMeta,
 } from "../../utils/job-postings.utils";
 
 type Props = {
@@ -71,6 +73,7 @@ export default function JobPostingDetailPageContent({ jobId }: Props) {
   });
 
   const patchMutation = usePatchJobPostingMutation(jobId);
+  const toggleActiveMutation = useToggleJobPostingActiveMutation({ jobId });
 
   const actions = useJobPostingDetailActions({
     viewerRole,
@@ -91,9 +94,18 @@ export default function JobPostingDetailPageContent({ jobId }: Props) {
     return <JobPostingDetailError isStudent={viewerRole === "STUDENT"} />;
   }
 
+  if (
+    viewerRole === "STUDENT" &&
+    (job.status !== "approved" || job.tag !== "Active")
+  ) {
+    return <JobPostingDetailError isStudent />;
+  }
+
   const company = companyProfileQuery.data?.data;
   const statusMeta = getJobPostingStatusMeta(job.status);
+  const tagMeta = getJobPostingTagMeta(job.tag);
   const deadlineState = getDeadlineState(job.applicationDeadline);
+  const isBusy = patchMutation.isPending || toggleActiveMutation.isPending;
 
   return (
     <>
@@ -105,6 +117,7 @@ export default function JobPostingDetailPageContent({ jobId }: Props) {
             <JobPostingDetailHeader
               viewerRole={viewerRole}
               status={job.status}
+              tag={job.tag}
               jobTitle={job.jobTitle}
               companyName={company?.companyName || "Chưa cập nhật"}
               companyLogoUrl={company?.logoUrl || job.logoUrl || null}
@@ -124,9 +137,11 @@ export default function JobPostingDetailPageContent({ jobId }: Props) {
               applicantCount={job.applicantCount}
               statusLabel={statusMeta.label}
               statusClassName={statusMeta.className}
-              isLoading={patchMutation.isPending}
+              tagLabel={tagMeta.label}
+              tagClassName={tagMeta.className}
+              isLoading={isBusy}
               onEdit={actions.handleEdit}
-              onHide={actions.handleHide}
+              onHide={() => toggleActiveMutation.mutate()}
               onViewApplicants={actions.handleViewApplicants}
               onApply={actions.handleApply}
               onSave={actions.handleSave}
@@ -162,6 +177,7 @@ export default function JobPostingDetailPageContent({ jobId }: Props) {
           <JobPostingSidebar
             viewerRole={viewerRole}
             status={job.status}
+            adminNote={job.adminNote}
             companyName={company?.companyName || "Chưa cập nhật"}
             companySize={company?.companySize}
             industry={company?.industry}

@@ -8,12 +8,12 @@ import {
 } from "../api/job-postings.api";
 import type {
   JobPostingCardAdminCompanyItem,
-  JobPostingStatus,
+  JobPostingTag,
 } from "../types/job-postings.types";
 
 export function useCompanyJobPostingsPage() {
   const [searchInput, setSearchInput] = useState("");
-  const [status, setStatus] = useState<JobPostingStatus | "">("");
+  const [tag, setTag] = useState<JobPostingTag | "">("");
 
   const statsQuery = useQuery({
     queryKey: ["job-postings", "company", "stats"],
@@ -21,13 +21,13 @@ export function useCompanyJobPostingsPage() {
   });
 
   const cardsQuery = useQuery({
-    queryKey: ["job-postings", "company", "cards", searchInput, status],
+    queryKey: ["job-postings", "company", "cards", searchInput, tag],
     queryFn: async () =>
       getJobPostingCardsForCompany({
         page: 1,
         limit: 9,
         search: searchInput.trim() || undefined,
-        status: status || undefined,
+        tag: tag || undefined,
       }),
   });
 
@@ -40,8 +40,8 @@ export function useCompanyJobPostingsPage() {
   return {
     searchInput,
     setSearchInput,
-    status,
-    setStatus,
+    tag,
+    setTag,
     cards,
     stats,
     isLoading: statsQuery.isLoading || cardsQuery.isLoading,

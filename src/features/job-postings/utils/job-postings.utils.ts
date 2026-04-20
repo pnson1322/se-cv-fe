@@ -1,6 +1,10 @@
 "use client";
 
-import type { JobPostingStatus, SalaryType } from "../types/job-postings.types";
+import type {
+  JobPostingStatus,
+  JobPostingTag,
+  SalaryType,
+} from "../types/job-postings.types";
 
 export function formatSalary(params: {
   salaryMin: number | null;
@@ -76,7 +80,7 @@ export function getJobPostingStatusMeta(status: JobPostingStatus) {
   switch (status) {
     case "approved":
       return {
-        label: "Đang hoạt động",
+        label: "Đã duyệt",
         className: "bg-emerald-50 text-emerald-700 border border-emerald-100",
       };
     case "pending":
@@ -102,15 +106,45 @@ export function getJobPostingStatusMeta(status: JobPostingStatus) {
   }
 }
 
-export function getStatusFilterOptions(): Array<{
+export function getJobPostingTagMeta(tag: JobPostingTag) {
+  switch (tag) {
+    case "Active":
+      return {
+        label: "Đang hiển thị",
+        className: "bg-emerald-50 text-emerald-700 border border-emerald-100",
+      };
+    case "Pending":
+      return {
+        label: "Chưa hiển thị",
+        className: "bg-slate-100 text-slate-700 border border-slate-200",
+      };
+    case "Hidden":
+      return {
+        label: "Đã ẩn",
+        className: "bg-slate-100 text-slate-700 border border-slate-200",
+      };
+    case "Closed":
+      return {
+        label: "Đã đóng",
+        className: "bg-rose-50 text-rose-700 border border-rose-100",
+      };
+    default:
+      return {
+        label: tag,
+        className: "bg-slate-100 text-slate-700 border border-slate-200",
+      };
+  }
+}
+
+export function getCompanyTagFilterOptions(): Array<{
   label: string;
-  value: JobPostingStatus | "";
+  value: JobPostingTag | "";
 }> {
   return [
     { label: "Tất cả trạng thái", value: "" },
-    { label: "Chờ duyệt", value: "pending" },
-    { label: "Đang hoạt động", value: "approved" },
-    { label: "Bị từ chối", value: "rejected" },
-    { label: "Bị hạn chế", value: "restricted" },
+    { label: "Đang hoạt động", value: "Active" },
+    { label: "Chờ duyệt", value: "Pending" },
+    { label: "Tạm ẩn", value: "Hidden" },
+    { label: "Đã đóng", value: "Closed" },
   ];
 }

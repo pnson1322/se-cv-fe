@@ -1,8 +1,14 @@
 "use client";
 
-import { BriefcaseBusiness, CheckCircle2, FileText } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  CheckCircle2,
+  FileText,
+  CircleX,
+  ShieldAlert,
+} from "lucide-react";
 
-type Tone = "cyan" | "blue" | "green";
+type Tone = "cyan" | "blue" | "green" | "red" | "orange";
 
 type Props = {
   title: string;
@@ -16,6 +22,7 @@ function getToneClassName(tone: Tone) {
     return {
       bg: "bg-blue-50",
       text: "text-blue-500",
+      contentText: "text-slate-700",
     };
   }
 
@@ -23,26 +30,45 @@ function getToneClassName(tone: Tone) {
     return {
       bg: "bg-emerald-50",
       text: "text-emerald-500",
+      contentText: "text-slate-700",
+    };
+  }
+
+  if (tone === "red") {
+    return {
+      bg: "bg-red-50",
+      text: "text-red-500",
+      contentText: "text-red-700",
+    };
+  }
+
+  if (tone === "orange") {
+    return {
+      bg: "bg-orange-50",
+      text: "text-orange-500",
+      contentText: "text-orange-700",
     };
   }
 
   return {
     bg: "bg-cyan-50",
     text: "text-(--color-accent)",
+    contentText: "text-slate-700",
   };
 }
 
-function renderContent(content: string, listMode?: boolean) {
+function renderContent(
+  content: string,
+  listMode: boolean | undefined,
+  contentTextClassName: string,
+) {
   if (!listMode) {
     return (
-      <div className="space-y-4">
+      <div
+        className={`space-y-4 text-[15px] leading-8 ${contentTextClassName}`}
+      >
         {content.split("\n").map((paragraph, index) => (
-          <p
-            key={`${paragraph}-${index}`}
-            className="text-[15px] leading-8 text-(--color-muted)"
-          >
-            {paragraph}
-          </p>
+          <p key={`${paragraph}-${index}`}>{paragraph}</p>
         ))}
       </div>
     );
@@ -56,12 +82,12 @@ function renderContent(content: string, listMode?: boolean) {
   return (
     <div className="space-y-4">
       {lines.map((line, index) => (
-        <div key={`${line}-${index}`} className="flex items-start gap-3">
-          <CheckCircle2
-            size={20}
-            className="mt-0.5 shrink-0 text-emerald-500"
-          />
-          <p className="text-[15px] leading-7 text-(--color-muted)">{line}</p>
+        <div
+          key={`${line}-${index}`}
+          className={`flex items-start gap-3 text-[15px] leading-8 ${contentTextClassName}`}
+        >
+          <CheckCircle2 size={18} className="mt-1 shrink-0 text-emerald-500" />
+          <span>{line}</span>
         </div>
       ))}
     </div>
@@ -78,26 +104,30 @@ export default function JobPostingDetailSection({
 
   const icon =
     tone === "blue" ? (
-      <FileText size={19} />
+      <FileText size={20} className={toneClassName.text} />
     ) : tone === "green" ? (
-      <CheckCircle2 size={19} />
+      <CheckCircle2 size={20} className={toneClassName.text} />
+    ) : tone === "red" ? (
+      <CircleX size={20} className={toneClassName.text} />
+    ) : tone === "orange" ? (
+      <ShieldAlert size={20} className={toneClassName.text} />
     ) : (
-      <BriefcaseBusiness size={19} />
+      <BriefcaseBusiness size={20} className={toneClassName.text} />
     );
 
   return (
     <section className="rounded-3xl border border-(--color-border) bg-white p-6 shadow-sm">
       <div className="mb-5 flex items-center gap-3">
         <div
-          className={`flex h-10 w-10 items-center justify-center rounded-2xl ${toneClassName.bg} ${toneClassName.text}`}
+          className={`flex h-11 w-11 items-center justify-center rounded-2xl ${toneClassName.bg}`}
         >
           {icon}
         </div>
 
-        <h3 className="text-[18px] font-bold text-(--color-text)">{title}</h3>
+        <h2 className="text-[20px] font-bold text-(--color-text)">{title}</h2>
       </div>
 
-      {renderContent(content, listMode)}
+      {renderContent(content, listMode, toneClassName.contentText)}
     </section>
   );
 }

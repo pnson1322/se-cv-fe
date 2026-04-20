@@ -18,12 +18,13 @@ export default function CompanyJobCard({
   onViewDetail,
 }: Props) {
   const isStudent = viewerRole === "STUDENT";
-  const statusMeta = getJobPostingStatusMeta(job.status);
+  const hasStatus = typeof job.status === "string" && job.status.length > 0;
+  const statusMeta = hasStatus ? getJobPostingStatusMeta(job.status) : null;
 
   const salaryText =
     job.isSalaryNegotiable || job.salaryType === "NEGOTIABLE"
       ? "Thỏa thuận"
-      : `${formatMoney(job.salaryMin)} - ${formatMoney(job.salaryMax)}`;
+      : formatSalaryRange(job.salaryMin, job.salaryMax);
 
   return (
     <div className="rounded-xl border border-slate-200 bg-white px-6 py-5 shadow-sm transition hover:border-slate-300 hover:shadow-md">
@@ -34,7 +35,7 @@ export default function CompanyJobCard({
               {job.jobTitle}
             </h3>
 
-            {!isStudent ? (
+            {!isStudent && statusMeta ? (
               <span
                 className={`inline-flex rounded-full px-2.5 py-1 text-[12px] font-semibold ${statusMeta.className}`}
               >
@@ -46,7 +47,7 @@ export default function CompanyJobCard({
           <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-2 text-[14px] leading-6 text-slate-500">
             <span className="inline-flex items-center gap-1.5">
               <MapPin size={14} className="text-slate-400" />
-              {job.city}
+              {job.city || "Chưa cập nhật"}
             </span>
 
             <span className="inline-flex items-center gap-1.5">
@@ -83,6 +84,17 @@ export default function CompanyJobCard({
       </div>
     </div>
   );
+}
+
+function formatSalaryRange(
+  salaryMin: number | null | undefined,
+  salaryMax: number | null | undefined,
+) {
+  if (salaryMin == null || salaryMax == null) {
+    return "Chưa cập nhật";
+  }
+
+  return `${formatMoney(salaryMin)} - ${formatMoney(salaryMax)}`;
 }
 
 function formatMoney(value: number) {

@@ -9,6 +9,9 @@ export type JobPostingStatus =
   | "approved"
   | "rejected"
   | "restricted";
+
+export type JobPostingTag = "Active" | "Pending" | "Hidden" | "Closed";
+
 type ExperienceLevel =
   | "INTERN"
   | "FRESHER"
@@ -16,6 +19,7 @@ type ExperienceLevel =
   | "MIDDLE"
   | "SENIOR"
   | "LEAD";
+
 type PositionLevel =
   | "STAFF"
   | "MANAGER"
@@ -23,6 +27,7 @@ type PositionLevel =
   | "SUPERVISOR"
   | "DIRECTOR"
   | "C_LEVEL";
+
 export type SalaryType = "RANGE" | "NEGOTIABLE";
 
 export type PostBody = {
@@ -30,8 +35,8 @@ export type PostBody = {
   categoryId: number;
   city: string;
   applicationDeadline: string;
-  salaryMin: number;
-  salaryMax: number;
+  salaryMin: number | null;
+  salaryMax: number | null;
   salaryType: string;
   isSalaryNegotiable: boolean;
   numberOfPositions: number;
@@ -53,8 +58,8 @@ export type PutBody = {
   categoryId?: number;
   city?: string;
   applicationDeadline?: string;
-  salaryMin?: number;
-  salaryMax?: number;
+  salaryMin?: number | null;
+  salaryMax?: number | null;
   salaryType?: string;
   isSalaryNegotiable?: boolean;
   numberOfPositions?: number;
@@ -94,13 +99,15 @@ export type JobPosting = {
   experienceLevel: ExperienceLevel;
   positionLevel: PositionLevel;
   numberOfPositions: number;
-  salaryMin: number;
-  salaryMax: number;
+  salaryMin: number | null;
+  salaryMax: number | null;
   salaryType: SalaryType;
   isSalaryNegotiable: boolean;
   city: string;
   applicationDeadline: string;
   status: JobPostingStatus;
+  tag: JobPostingTag;
+  adminNote?: string | null;
   applicantCount: number;
   createdAt: string;
   updatedAt: string;
@@ -117,9 +124,9 @@ export type JobPostingDataItem = {
   jobId: number;
   jobTitle: string;
   city: string;
-  salaryMin: number;
-  salaryMax: number;
-  salaryType: string;
+  salaryMin: number | null;
+  salaryMax: number | null;
+  salaryType: SalaryType;
   isSalaryNegotiable: boolean;
   approveAt: string;
   categoryId: number;
@@ -158,16 +165,17 @@ export type JobPostingCardsParams = {
 
 export type JobPostingCardAdminCompanyItem = {
   jobId: number;
-  companyName: string;
-  logoUrl: string | null;
   jobTitle: string;
   city: string | null;
+  companyName: string;
+  logoUrl: string | null;
   salaryMin: number | null;
   salaryMax: number | null;
   salaryType: SalaryType | null;
   isSalaryNegotiable: boolean;
   applicationDeadline: string;
   status: JobPostingStatus;
+  tag: JobPostingTag;
   applicantCount: number;
   skills: SkillItem[];
   createdAt: string;
@@ -192,6 +200,13 @@ export type JobPostingCardStudentItem = {
 export type JobPostingsStats = {
   total: number;
   active: number;
-  restricted: number;
+  hidden: number;
   closed: number;
+};
+
+export type AdminJobPostingsStats = {
+  pending: number;
+  approvedToday: number;
+  rejected: number;
+  total: number;
 };

@@ -88,18 +88,23 @@ export default function CompanyJobsSection({
           if (job.isSalaryNegotiable || job.salaryType === "NEGOTIABLE") {
             matchSalary = false;
           } else {
-            const avgSalary = (job.salaryMin + job.salaryMax) / 2;
+            if (job.salaryMin == null || job.salaryMax == null) {
+              matchSalary = false;
+            } else {
+              const avgSalary = (job.salaryMin + job.salaryMax) / 2;
 
-            if (salaryFilter === "under-10m") {
-              matchSalary = avgSalary < 10_000_000;
-            }
+              if (salaryFilter === "under-10m") {
+                matchSalary = avgSalary < 10_000_000;
+              }
 
-            if (salaryFilter === "10m-20m") {
-              matchSalary = avgSalary >= 10_000_000 && avgSalary <= 20_000_000;
-            }
+              if (salaryFilter === "10m-20m") {
+                matchSalary =
+                  avgSalary >= 10_000_000 && avgSalary <= 20_000_000;
+              }
 
-            if (salaryFilter === "above-20m") {
-              matchSalary = avgSalary > 20_000_000;
+              if (salaryFilter === "above-20m") {
+                matchSalary = avgSalary > 20_000_000;
+              }
             }
           }
         }
@@ -139,7 +144,7 @@ export default function CompanyJobsSection({
           disabled={!hasActiveFilters}
           className={`inline-flex h-12 items-center justify-center gap-2 rounded-2xl px-5 text-[14.5px] font-semibold transition ${
             hasActiveFilters
-              ? "border border-(--color-accent) text-(--color-accent) bg-cyan-50 hover:bg-(--color-accent) hover:text-white"
+              ? "border border-(--color-border) bg-white text-(--color-text) shadow-sm hover:-translate-y-0.5 hover:bg-slate-50 hover:shadow-md"
               : "cursor-not-allowed border border-(--color-border) bg-slate-100 text-slate-400"
           }`}
         >

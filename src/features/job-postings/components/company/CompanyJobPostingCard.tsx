@@ -7,6 +7,7 @@ import {
   formatRelativeDate,
   formatSalary,
   getJobPostingStatusMeta,
+  getJobPostingTagMeta,
 } from "../../utils/job-postings.utils";
 
 type Props = {
@@ -16,6 +17,7 @@ type Props = {
 
 export default function CompanyJobPostingCard({ item, onViewDetail }: Props) {
   const statusMeta = getJobPostingStatusMeta(item.status);
+  const tagMeta = getJobPostingTagMeta(item.tag);
 
   return (
     <article className="rounded-3xl border border-(--color-border) bg-white p-5 shadow-sm transition hover:shadow-md">
@@ -68,6 +70,20 @@ export default function CompanyJobPostingCard({ item, onViewDetail }: Props) {
         </div>
 
         <div className="mt-4 flex flex-wrap gap-2">
+          <span
+            className={`inline-flex rounded-full px-3 py-1 text-[13px] font-semibold ${tagMeta.className}`}
+          >
+            {tagMeta.label}
+          </span>
+
+          <span
+            className={`inline-flex rounded-full px-3 py-1 text-[13px] font-semibold ${statusMeta.className}`}
+          >
+            {statusMeta.label}
+          </span>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
           {item.skills.map((skill) => (
             <span
               key={skill.skillId}
@@ -80,17 +96,9 @@ export default function CompanyJobPostingCard({ item, onViewDetail }: Props) {
 
         <div className="mt-5 border-t border-(--color-border) pt-4">
           <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-4">
-              <span
-                className={`inline-flex rounded-full px-3 py-1 text-[13px] font-semibold ${statusMeta.className}`}
-              >
-                {statusMeta.label}
-              </span>
-
-              <span className="text-[14px] text-(--color-muted)">
-                {item.applicantCount} ứng viên
-              </span>
-            </div>
+            <span className="text-[14px] text-(--color-muted)">
+              {item.applicantCount} ứng viên
+            </span>
 
             <button
               type="button"

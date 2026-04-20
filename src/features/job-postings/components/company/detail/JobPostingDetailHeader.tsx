@@ -4,86 +4,77 @@ import Image from "next/image";
 import {
   BriefcaseBusiness,
   CalendarDays,
+  Eye,
   EyeOff,
   Loader2,
   MapPin,
   Pencil,
-  ShieldAlert,
   Users,
   Wallet,
   Check,
   X,
+  ShieldAlert,
+  Bookmark,
 } from "lucide-react";
-
-import type { JobPostingStatus } from "../../../types/job-postings.types";
-import type { Role } from "@/features/auth/constants/roles";
+import type {
+  JobPostingStatus,
+  JobPostingTag,
+} from "../../../types/job-postings.types";
 
 type Props = {
-  viewerRole: Role;
+  viewerRole: string;
   status: JobPostingStatus;
-
+  tag: JobPostingTag;
   jobTitle: string;
   companyName: string;
   companyLogoUrl?: string | null;
-
   city?: string | null;
   salaryText: string;
   postedAtText: string;
   deadlineText: string;
-
   isExpired?: boolean;
   isExpiringSoon?: boolean;
-
   applicantCount: number;
-
   statusLabel: string;
   statusClassName: string;
-
+  tagLabel: string;
+  tagClassName: string;
   isLoading?: boolean;
-
   onEdit: () => void;
-  onHide?: () => void;
-  onViewApplicants?: () => void;
-
-  onApply?: () => void;
-  onSave?: () => void;
-
-  onApprove?: () => void;
-  onReject?: () => void;
-  onRestrict?: () => void;
-  onReapprove?: () => void;
+  onHide: () => void;
+  onViewApplicants: () => void;
+  onApply: () => void;
+  onSave: () => void;
+  onApprove: () => void;
+  onReject: () => void;
+  onRestrict: () => void;
+  onReapprove: () => void;
 };
 
 export default function JobPostingDetailHeader({
   viewerRole,
   status,
-
+  tag,
   jobTitle,
   companyName,
   companyLogoUrl,
-
   city,
   salaryText,
   postedAtText,
   deadlineText,
-
   isExpired = false,
   isExpiringSoon = false,
-
   applicantCount,
-
   statusLabel,
   statusClassName,
-
+  tagLabel,
+  tagClassName,
   isLoading = false,
-
   onEdit,
   onHide,
   onViewApplicants,
-
   onApply,
   onSave,
-
   onApprove,
   onReject,
   onRestrict,
@@ -92,10 +83,12 @@ export default function JobPostingDetailHeader({
   const isCompany = viewerRole === "COMPANY";
   const isAdmin = viewerRole === "ADMIN";
   const isStudent = viewerRole === "STUDENT";
+  const isHidden = tag === "Hidden";
+  const canToggleVisible =
+    isCompany && status === "approved" && tag !== "Closed";
 
   return (
     <section className="rounded-3xl border border-(--color-border) bg-white p-6 shadow-sm">
-      {/* HEADER TOP */}
       <div className="flex gap-5">
         <div className="relative flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-3xl border border-(--color-border) bg-(--color-surface) text-(--color-muted)">
           {companyLogoUrl ? (
@@ -120,7 +113,6 @@ export default function JobPostingDetailHeader({
             {companyName}
           </p>
 
-          {/* META */}
           <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-[14px] text-(--color-muted)">
             <span className="inline-flex items-center gap-1.5">
               <MapPin size={16} />
@@ -142,145 +134,169 @@ export default function JobPostingDetailHeader({
               Hạn: {deadlineText}
             </span>
 
-            {/* STUDENT TAG */}
-            {isStudent && isExpired && (
-              <span className="rounded-full bg-red-50 px-3 py-1 text-[13px] font-semibold text-red-600">
+            {isExpired ? (
+              <span className="inline-flex rounded-full bg-rose-50 px-3 py-1 text-[12px] font-semibold text-rose-700">
                 Đã hết hạn
               </span>
-            )}
+            ) : null}
 
-            {isStudent && !isExpired && isExpiringSoon && (
-              <span className="rounded-full bg-amber-50 px-3 py-1 text-[13px] font-semibold text-amber-700">
+            {!isExpired && isExpiringSoon && isStudent ? (
+              <span className="inline-flex rounded-full bg-amber-50 px-3 py-1 text-[12px] font-semibold text-amber-700">
                 Sắp hết hạn
               </span>
-            )}
+            ) : null}
           </div>
 
-          {/* STATUS + APPLICANTS */}
-          {!isStudent && (
-            <div className="mt-4 flex flex-wrap items-center gap-4">
-              <span
-                className={`inline-flex rounded-full px-3 py-1 text-[13px] font-semibold ${statusClassName}`}
-              >
-                {statusLabel}
-              </span>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <span
+              className={`inline-flex rounded-full px-3 py-1 text-[13px] font-semibold ${statusClassName}`}
+            >
+              {statusLabel}
+            </span>
 
+            {isCompany || isAdmin ? (
+              <span
+                className={`inline-flex rounded-full px-3 py-1 text-[13px] font-semibold ${tagClassName}`}
+              >
+                {tagLabel}
+              </span>
+            ) : null}
+
+            {!isStudent ? (
               <span className="inline-flex items-center gap-1.5 text-[14px] text-(--color-muted)">
                 <Users size={16} />
                 {applicantCount} ứng viên
               </span>
-            </div>
-          )}
+            ) : null}
+          </div>
         </div>
       </div>
 
-      {/* ACTIONS */}
       <div className="mt-6 border-t border-(--color-border) pt-5">
-        <div className="grid gap-3 md:grid-cols-3">
-          {/* COMPANY */}
-          {isCompany && (
-            <>
-              <button
-                type="button"
-                onClick={onEdit}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-(--color-accent) px-5 py-3 text-[15px] font-semibold text-white transition hover:brightness-95"
-              >
+        {isCompany ? (
+          <div className="grid gap-3 md:grid-cols-3">
+            <button
+              type="button"
+              onClick={onEdit}
+              disabled={isLoading}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-(--color-accent) px-5 py-3 text-[15px] font-semibold text-white transition hover:brightness-95 disabled:opacity-60"
+            >
+              {isLoading ? (
+                <Loader2 size={18} className="animate-spin" />
+              ) : (
                 <Pencil size={18} />
-                Chỉnh sửa
-              </button>
+              )}
+              Chỉnh sửa
+            </button>
 
-              <button
-                type="button"
-                onClick={onHide}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-(--color-border) bg-white px-5 py-3 text-[15px] font-semibold text-(--color-text)"
-              >
+            <button
+              type="button"
+              onClick={onHide}
+              disabled={isLoading || !canToggleVisible}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-(--color-border) bg-white px-5 py-3 text-[15px] font-semibold text-(--color-text) transition hover:bg-slate-50 disabled:opacity-60"
+            >
+              {isLoading ? (
+                <Loader2 size={18} className="animate-spin" />
+              ) : isHidden ? (
+                <Eye size={18} />
+              ) : (
                 <EyeOff size={18} />
-                Ẩn tin
-              </button>
+              )}
+              {isHidden ? "Hiện tin" : "Ẩn tin"}
+            </button>
 
+            <button
+              type="button"
+              onClick={onViewApplicants}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-(--color-accent) bg-white px-5 py-3 text-[15px] font-semibold text-(--color-accent) transition hover:bg-cyan-50"
+            >
+              <Users size={18} />
+              Xem ứng viên
+            </button>
+          </div>
+        ) : null}
+
+        {isAdmin ? (
+          <div className="grid gap-3 md:grid-cols-3">
+            {status === "pending" ? (
+              <>
+                <button
+                  type="button"
+                  onClick={onApprove}
+                  disabled={isLoading}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 text-[15px] font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-60"
+                >
+                  {isLoading ? (
+                    <Loader2 size={18} className="animate-spin" />
+                  ) : (
+                    <Check size={18} />
+                  )}
+                  Phê duyệt
+                </button>
+
+                <button
+                  type="button"
+                  onClick={onReject}
+                  disabled={isLoading}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-red-500 px-5 py-3 text-[15px] font-semibold text-white transition hover:bg-red-600 disabled:opacity-60"
+                >
+                  <X size={18} />
+                  Từ chối
+                </button>
+              </>
+            ) : null}
+
+            {status === "approved" ? (
               <button
                 type="button"
-                onClick={onViewApplicants}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-(--color-accent) bg-white px-5 py-3 text-[15px] font-semibold text-(--color-accent)"
-              >
-                <Users size={18} />
-                Xem ứng viên
-              </button>
-            </>
-          )}
-
-          {/* STUDENT */}
-          {isStudent && (
-            <>
-              <button
-                onClick={onApply}
-                className="rounded-2xl bg-(--color-accent) px-5 py-3 text-white font-semibold"
-              >
-                Ứng tuyển ngay
-              </button>
-
-              <button
-                onClick={onSave}
-                className="rounded-2xl border px-5 py-3 font-semibold"
-              >
-                Lưu tin
-              </button>
-            </>
-          )}
-
-          {/* ADMIN */}
-          {isAdmin && status === "pending" && (
-            <>
-              <button
+                onClick={onRestrict}
                 disabled={isLoading}
-                onClick={onApprove}
-                className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 text-white disabled:opacity-60"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-orange-500 px-5 py-3 text-[15px] font-semibold text-white transition hover:bg-orange-600 disabled:opacity-60"
+              >
+                <ShieldAlert size={18} />
+                Hạn chế
+              </button>
+            ) : null}
+
+            {status === "restricted" || status === "rejected" ? (
+              <button
+                type="button"
+                onClick={onReapprove}
+                disabled={isLoading}
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 text-[15px] font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-60"
               >
                 {isLoading ? (
                   <Loader2 size={18} className="animate-spin" />
                 ) : (
                   <Check size={18} />
                 )}
-                Phê duyệt
+                Duyệt lại
               </button>
+            ) : null}
+          </div>
+        ) : null}
 
-              <button
-                disabled={isLoading}
-                onClick={onReject}
-                className="flex items-center justify-center gap-2 rounded-2xl bg-red-500 px-5 py-3 text-white disabled:opacity-60"
-              >
-                <X size={18} />
-                Từ chối
-              </button>
-            </>
-          )}
-
-          {isAdmin && status === "approved" && (
+        {isStudent ? (
+          <div className="grid gap-3 md:grid-cols-2">
             <button
-              disabled={isLoading}
-              onClick={onRestrict}
-              className="flex items-center justify-center gap-2 rounded-2xl bg-orange-500 px-5 py-3 text-white disabled:opacity-60"
+              type="button"
+              onClick={onApply}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-(--color-accent) px-5 py-3 text-[15px] font-semibold text-white transition hover:brightness-95"
             >
-              <ShieldAlert size={18} />
-              Hạn chế
+              <Check size={18} />
+              Ứng tuyển ngay
             </button>
-          )}
 
-          {isAdmin && (status === "restricted" || status === "rejected") && (
             <button
-              disabled={isLoading}
-              onClick={onReapprove}
-              className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 text-white disabled:opacity-60"
+              type="button"
+              onClick={onSave}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-(--color-accent) bg-white px-5 py-3 text-[15px] font-semibold text-(--color-accent) transition hover:bg-cyan-50"
             >
-              {isLoading ? (
-                <Loader2 size={18} className="animate-spin" />
-              ) : (
-                <Check size={18} />
-              )}
-              Duyệt lại
+              <Bookmark size={18} />
+              Lưu tin
             </button>
-          )}
-        </div>
+          </div>
+        ) : null}
       </div>
     </section>
   );

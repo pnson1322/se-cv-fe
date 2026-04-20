@@ -1,24 +1,24 @@
-import {
-  JobItem,
-  JobPostingCardsParams,
-  JobPostingsStats,
-} from "./../types/job-postings.types";
 import { api } from "@/lib/axios";
-import {
+import type {
+  AdminJobPostingsStats,
   ApiResponse,
   CategoryItem,
+  JobItem,
   JobPosting,
+  JobPostingCardAdminCompanyItem,
+  JobPostingCardStudentItem,
+  JobPostingCardsParams,
   JobPostingData,
   JobPostingDataItem,
   JobPostingsListParam,
+  JobPostingsStats,
+  JobPostingTag,
   PatchBody,
   PostBody,
   PostResponse,
   PutBody,
   PutResponse,
   SkillItem,
-  JobPostingCardAdminCompanyItem,
-  JobPostingCardStudentItem,
 } from "../types/job-postings.types";
 
 // for all:
@@ -38,6 +38,7 @@ export async function getJobPostingsListByCompanyId(
       params: { page, limit },
     },
   );
+
   return res.data;
 }
 
@@ -89,10 +90,17 @@ export async function putJobPosting(id: number, payload: PutBody) {
   return res.data;
 }
 
+export async function toggleJobPostingActive(id: number) {
+  const res = await api.patch<ApiResponse<Record<string, never>>>(
+    `/job-postings/${id}/toggle-active`,
+  );
+  return res.data;
+}
+
 export async function getJobPostingCardsForCompany(
-  params: JobPostingCardsParams,
+  params: JobPostingCardsParams & { tag?: JobPostingTag | "" },
 ) {
-  const { page = 1, limit = 10, search, status, city } = params;
+  const { page = 1, limit = 10, search, city, tag } = params;
 
   const queryParams: Record<string, string | number> = {
     page,
@@ -103,17 +111,17 @@ export async function getJobPostingCardsForCompany(
     queryParams.search = search.trim();
   }
 
-  if (status) {
-    queryParams.status = status;
-  }
-
   if (city?.trim()) {
     queryParams.city = city.trim();
   }
 
+  if (tag) {
+    queryParams.tag = tag;
+  }
+
   const res = await api.get<
     ApiResponse<JobPostingData<JobPostingCardAdminCompanyItem>>
-  >("/job-postings/card", {
+  >("/job-postings/card/company", {
     params: queryParams,
   });
 
@@ -146,6 +154,13 @@ export async function getJobPostingCardsForAdmin(
     },
   });
 
+  return res.data;
+}
+
+export async function getAdminJobPostingsStats() {
+  const res = await api.get<ApiResponse<AdminJobPostingsStats>>(
+    "/job-postings/admin/stats",
+  );
   return res.data;
 }
 

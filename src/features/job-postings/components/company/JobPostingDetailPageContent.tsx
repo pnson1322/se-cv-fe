@@ -109,10 +109,10 @@ export default function JobPostingDetailPageContent({ jobId }: Props) {
 
   return (
     <>
-      <div className="mx-32 mt-4 space-y-7 pb-12">
+      <div className="mx-auto mt-4 max-w-7xl space-y-7 px-4 pb-12 md:px-6 lg:px-8">
         <JobPostingBackBar onBack={() => router.back()} />
 
-        <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_390px]">
+        <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_360px]">
           <div className="min-w-0 space-y-6">
             <JobPostingDetailHeader
               viewerRole={viewerRole}

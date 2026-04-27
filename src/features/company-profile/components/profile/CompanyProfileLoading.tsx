@@ -16,7 +16,7 @@ export default function CompanyProfileLoading() {
             </div>
           </div>
 
-          <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
             <div className="space-y-6">
               {[1, 2, 3].map((item) => (
                 <div

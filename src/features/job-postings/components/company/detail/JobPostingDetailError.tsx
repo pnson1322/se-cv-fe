@@ -8,7 +8,7 @@ type Props = {
 
 export default function JobPostingDetailError({ isStudent }: Props) {
   return (
-    <div className="mx-32 mt-4 pb-12">
+    <div className="mx-auto mt-4 max-w-7xl px-4 pb-12 md:px-6 lg:px-8">
       <div className="rounded-3xl border border-red-200 bg-white p-10 shadow-sm">
         <div className="mx-auto flex max-w-130 flex-col items-center text-center">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-50 text-red-500">

@@ -4,10 +4,10 @@ import { Loader2 } from "lucide-react";
 
 export default function JobPostingDetailLoading() {
   return (
-    <div className="mx-32 mt-4 space-y-7 pb-12">
+    <div className="mx-auto mt-4 max-w-7xl space-y-7 px-4 pb-12 md:px-6 lg:px-8">
       <div className="h-6 w-48 rounded-full bg-slate-200" />
 
-      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_390px]">
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-6">
           <div className="rounded-3xl border border-(--color-border) bg-white p-6 shadow-sm">
             <div className="flex gap-5">

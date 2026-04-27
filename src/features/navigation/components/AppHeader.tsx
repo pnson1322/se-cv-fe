@@ -1,140 +1,29 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { BadgeCheck, BriefcaseBusiness, Menu, X, LogOut } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { useAuth } from "@/features/auth/hooks/useAuth";
-import { getAccessToken } from "@/features/auth/lib/auth-storage";
-import { useNotificationSocket } from "@/features/notification/hooks/useNotificationSocket";
-import { disconnectSocket } from "@/lib/socket";
-import type { CompanyProfile } from "@/features/company-profile/types/company.types";
-import { getMyCompany } from "@/features/company-profile/api/company.api";
-import {
-  adminNav,
-  recruiterNav,
-  recruiterPendingNav,
-  studentNav,
-} from "../config/header-nav.config";
+import { usePathname } from "next/navigation";
+import { useAppHeader } from "../hooks/useAppHeader";
 import HeaderNav from "./HeaderNav";
 import HeaderNotification from "./HeaderNotification";
 import HeaderUserMenu from "./HeaderUserMenu";
 
 export default function AppHeader() {
-  const { user, isLoading, logout } = useAuth();
-  const router = useRouter();
   const pathname = usePathname();
 
-  const [company, setCompany] = useState<CompanyProfile | null>(null);
-  const [openMobile, setOpenMobile] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const {
+    isReady,
+    isScrolled,
+    openMobile,
+    headerState,
+    homeHref,
+    handleLogout,
+    closeMobileMenu,
+    openMobileMenu,
+    setIsNotificationOpen,
+  } = useAppHeader();
 
-  const socketToken = useMemo(
-    () => getAccessToken() ?? undefined,
-    [user?.user_id],
-  );
-
-  useNotificationSocket(socketToken, {
-    enabled: !!user,
-    showToast: !isNotificationOpen,
-    onlyToastWhenTabHidden: true,
-  });
-
-  useEffect(() => {
-    if (user?.role !== "COMPANY") return;
-
-    let mounted = true;
-
-    getMyCompany()
-      .then((res) => {
-        if (mounted) setCompany(res.data ?? null);
-      })
-      .catch(() => {
-        if (mounted) setCompany(null);
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, [user?.role]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 12);
-    };
-
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    if (!openMobile) {
-      document.body.style.overflow = "";
-      return;
-    }
-
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [openMobile]);
-
-  const headerState = useMemo(() => {
-    if (!user) return null;
-
-    if (user.role === "STUDENT") {
-      return {
-        roleLabel: "Sinh viên",
-        name: user.full_name || user.email.split("@")[0],
-        avatarUrl: user.avatar_url,
-        navItems: studentNav,
-        pendingBadge: null,
-      };
-    }
-
-    if (user.role === "ADMIN") {
-      return {
-        roleLabel: "Quản trị viên",
-        name: user.full_name || user.email.split("@")[0],
-        avatarUrl: user.avatar_url,
-        navItems: adminNav,
-        pendingBadge: null,
-      };
-    }
-
-    const isApproved = company?.status === "APPROVED";
-
-    return {
-      roleLabel: "Nhà tuyển dụng",
-      name: user.full_name || company?.companyName || user.email.split("@")[0],
-      avatarUrl: user.avatar_url || company?.logoUrl || null,
-      navItems: isApproved ? recruiterNav : recruiterPendingNav,
-      pendingBadge: isApproved ? null : "Chờ duyệt",
-    };
-  }, [user, company]);
-
-  const homeHref = useMemo(() => {
-    if (!user) return "/login";
-
-    if (user.role === "STUDENT") return "/student/dashboard";
-    if (user.role === "ADMIN") return "/admin/dashboard";
-
-    return company?.status === "APPROVED"
-      ? "/recruiter/dashboard"
-      : "/recruiter/profile";
-  }, [user, company]);
-
-  const handleLogout = () => {
-    setOpenMobile(false);
-    setIsNotificationOpen(false);
-    disconnectSocket();
-    logout();
-    router.replace("/login");
-  };
-
-  if (isLoading || !user || !headerState) return null;
+  if (!isReady || !headerState) return null;
 
   return (
     <>
@@ -145,20 +34,20 @@ export default function AppHeader() {
             : "px-4 py-3 md:px-5"
         }`}
       >
-        <div className="flex items-center gap-4 lg:gap-8">
+        <div className="flex min-w-0 items-center gap-4 lg:gap-8">
           <Link
             href={homeHref}
-            className="flex min-w-0 shrink-0 items-center gap-3"
+            className="flex shrink-0 items-center gap-3"
           >
             <div
-              className={`flex items-center justify-center rounded-[14px] bg-cyan-500 text-white shadow-[0_8px_20px_rgba(6,182,212,0.28)] transition-all duration-300 ${
+              className={`flex shrink-0 items-center justify-center rounded-[14px] bg-cyan-500 text-white shadow-[0_8px_20px_rgba(6,182,212,0.28)] transition-all duration-300 ${
                 isScrolled ? "h-9 w-9" : "h-10 w-10"
               }`}
             >
               <BriefcaseBusiness size={isScrolled ? 18 : 20} />
             </div>
 
-            <div className="min-w-0 leading-tight">
+            <div className="hidden min-w-0 leading-tight 2xl:block">
               <p
                 className={`truncate font-bold text-white transition-all duration-300 ${
                   isScrolled ? "text-[1.22rem]" : "text-[1.35rem]"
@@ -186,7 +75,7 @@ export default function AppHeader() {
             <HeaderNav items={headerState.navItems} />
           </div>
 
-          <div className="ml-auto flex shrink-0 items-center gap-3 md:gap-5">
+          <div className="ml-auto flex items-center gap-3 md:gap-5">
             <HeaderNotification onOpenChange={setIsNotificationOpen} />
             <div className="hidden h-8 w-px bg-white/15 md:block" />
             <HeaderUserMenu
@@ -198,7 +87,7 @@ export default function AppHeader() {
             <button
               type="button"
               className="rounded-xl p-2 text-white transition hover:bg-white/12 xl:hidden"
-              onClick={() => setOpenMobile(true)}
+              onClick={openMobileMenu}
               aria-label="Mở menu"
             >
               <Menu size={24} />
@@ -212,7 +101,7 @@ export default function AppHeader() {
           <button
             type="button"
             className="absolute inset-0 bg-slate-950/45 backdrop-blur-[2px]"
-            onClick={() => setOpenMobile(false)}
+            onClick={closeMobileMenu}
             aria-label="Đóng menu"
           />
 
@@ -227,7 +116,7 @@ export default function AppHeader() {
 
               <button
                 type="button"
-                onClick={() => setOpenMobile(false)}
+                onClick={closeMobileMenu}
                 className="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
                 aria-label="Đóng menu"
               >
@@ -247,7 +136,7 @@ export default function AppHeader() {
                     <Link
                       key={item.href}
                       href={item.href}
-                      onClick={() => setOpenMobile(false)}
+                      onClick={closeMobileMenu}
                       className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-[1rem] font-semibold transition ${
                         isActive
                           ? "bg-[#E0F7FA] text-[#06B6D4]"

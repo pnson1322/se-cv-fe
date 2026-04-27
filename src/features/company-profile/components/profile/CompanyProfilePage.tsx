@@ -98,7 +98,7 @@ export default function CompanyProfilePage({
   const [activeTab, setActiveTab] = useState<ProfileTab>("about");
 
   return (
-    <div className="mx-10 space-y-6">
+    <div className="space-y-6 px-6 md:px-10 lg:px-24">
       <CompanyProfileHeader
         company={company}
         viewerRole={viewerRole}
